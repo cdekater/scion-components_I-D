@@ -1,0 +1,609 @@
+
+
+
+
+Path Aware Networking RG                                   N. Rustignoli
+Internet-Draft                                               C. de Kater
+Intended status: Informational                                 A. Perrig
+Expires: 29 December 2022                                    ETH Zuerich
+                                                            27 June 2022
+
+
+                       SCION Components Analysis
+             draft-rustignoli-panrg-scion-components-latest
+
+Abstract
+
+   SCION is a future Internet architecture that focuses on security and
+   availability.  Its fundamental functions are carried out by a number
+   of components.
+
+   This document illustrates the dependencies between its core
+   components, extensions.  We also discuss the relationship between
+   SCION and existing protocols, with focus on illustrating which
+   existing protocols are reused/extended.  We also describe the
+   motivations behind cases where a greenfield approach is needed.  We
+   also briefly touch on the maturity level of components.
+
+About This Document
+
+   This note is to be removed before publishing as an RFC.
+
+   The latest revision of this draft can be found at
+   https://scionassociation.github.io/scion-components_I-D/draft-
+   rustignoli-panrg-scion-components.html.  Status information for this
+   document may be found at https://datatracker.ietf.org/doc/draft-
+   rustignoli-panrg-scion-components/.
+
+   Discussion of this document takes place on the Path Aware Networking
+   RG Research Group mailing list (mailto:panrg@irtf.org), which is
+   archived at https://www.ietf.org/mail-archive/web/panrg/.
+
+   Source for this draft and an issue tracker can be found at
+   https://github.com/scionassociation/scion-components_I-D.
+
+Status of This Memo
+
+   This Internet-Draft is submitted in full conformance with the
+   provisions of BCP 78 and BCP 79.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF).  Note that other groups may also distribute
+   working documents as Internet-Drafts.  The list of current Internet-
+   Drafts is at https://datatracker.ietf.org/drafts/current/.
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   This Internet-Draft will expire on 29 December 2022.
+
+Copyright Notice
+
+   Copyright (c) 2022 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+   This document is subject to BCP 78 and the IETF Trust's Legal
+   Provisions Relating to IETF Documents (https://trustee.ietf.org/
+   license-info) in effect on the date of publication of this document.
+   Please review these documents carefully, as they describe your rights
+   and restrictions with respect to this document.
+
+Table of Contents
+
+   1.  Introduction
+     1.1.  Conventions and Definitions
+   2.  Minimal stack - core components
+     2.1.  Routing - Control Plane
+       2.1.1.  Key properties in relationship to existing protocols
+     2.2.  Forwarding - Data plane
+       2.2.1.  SCION and Segment Routing
+     2.3.  Authentication - SCION PKI
+       2.3.1.  Issues with RPKI and BGPsec
+   3.  Additional components
+   4.  Transition mechanisms
+   5.  Dependency analysis
+   6.  Motivations for greenfield approaches RFC9049
+   7.  Security Considerations
+   8.  IANA Considerations
+   9.  References
+     9.1.  Normative References
+     9.2.  Informative References
+   Acknowledgments
+   Authors' Addresses
+
+1.  Introduction
+
+   While SCION was initially developed in academia, the architecture has
+   now "slipped out of the lab" and counts its early productive
+   deployments (including the Swiss inter-banking network SSFN).  The
+   architecture consists of a system of related components, some of
+   which are essential to set up end to end SCION connectivity, while
+   others are add-ons aiming at providing additional functionality,
+   security, or backwards compatibility.  Discussions at
+   [PANRG-INTERIM-Min] showed the need to describe the relationships
+   between SCION's core components.  In this document we therefore focus
+   on each component, describing its functionality, dependencies and
+   relationships to existing protocols.  The goal is not to describe
+   each component specification, rather to provide a basis for
+   discussions about the engineering decisions that made SCION what it
+   is.  We first start from core components, that form a SCION minimal
+   stack.  We then move onto extensions and additional components, some
+   of which provide compatibility mechanisms between SCION and existing
+   protocols.
+
+   Before reading this document, please refer to [DEKATER2022] for a
+   generic overview of SCION and its components, the problems it solves,
+   and existing deployments.  For an in-depth description of SCION,
+   please refer to [CHUAT22].
+
+1.1.  Conventions and Definitions
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+   "OPTIONAL" in this document are to be interpreted as described in
+   BCP 14 [RFC2119] [RFC8174] when, and only when, they appear in all
+   capitals, as shown here.
+
+2.  Minimal stack - core components
+
+   In order to establish end to end connectivity, SCION relies on three
+   main components.  SCION's data plane carries out secure path-aware
+   forwarding.  Its control plane takes case of routing.  SCION relies
+   on the Control Plane PKI to handle cryptographic material.
+
+   The control plane is responsible for discovering and disseminating
+   routing information.  Route discovery is performed by each autonomous
+   system (AS) thanks to an authenticated path-exploration mechanism
+   called beaconing.  SCION end hosts query their respective AS control
+   plane and obtain authenticated and authorized network paths, in the
+   form of path segments.  End hosts select one or more of the end to
+   end network paths, based on the application requirements (i.e.,
+   latency).  End hosts then craft SCION packets containing the end-to
+   end path to the destination.  The data plane is responsible for
+   forwarding SCION packets while authenticating them at each hop and.
+
+   Both the control and data plane rely on the control-plane PKI for
+   authentication and authorization.  SCION's authentication mechanisms
+   aim at protecting the whole end to end path at each hop.  SCION
+   Autonomous systems are organised in Isolation Domains (ISDs), that
+   independently define their own roots of trust.  ISD members share an
+   uniform trust environment (i.e., a common jurisdiction).  They can
+   transparently define trust relationships between parts of the network
+   by deciding wether to trust other ISDs.  SCION therefore relies on an
+   unique trust model, which is markably different from other PKI.  We
+   clarify the motivation behind this in Authentication (Section 2.3)
+
+   All above mentioned core components are deployed in production (i.e.,
+   they are in use within the the SSFN, the Swiss Finance Network).
+   There are commercial implementations of all core components
+   (including a high performance data-plane).
+
+2.1.  Routing - Control Plane
+
+   The SCION control plane's main purpose is to discover and disseminate
+   routing information, in the form of path segments.  Path exploration
+   is based on path-segment construction beacons (PCBs), that are
+   initiated by a subset of ASes and accumulate cryptographically
+   protected path forwarding information.  Each AS selects a few PCBs
+   and makes them available to end hosts via its path service.  End
+   hosts query the control plane for path segments, and combine them
+   into forwarding paths to transmit packets in the data plane.  For an
+   overview of the process to create and disseminate path information,
+   refer to [DEKATER2022] section 1.2.2.
+
+2.1.1.  Key properties in relationship to existing protocols
+
+   On a first sight, it might seem that SCION control plane takes care
+   of similar duties as of BGP.  While both focus on disseminating
+   routing information, there are substantial differences in the
+   properties provided and mechanisms.  We describe the core properties
+   provided by the SCION control plane, and its relationships with
+   existing protocols.
+
+   *  _Host addressing._.  SCION decouples routing from end-host
+      addressing, so inter-domain routing is based on ISD-AS tuples.
+      SCION is agnostic to end-host addressing, therefore its control
+      plane does not carry carry prefix information.  SCION therefore
+      can reuse existing end-host addressing mechanisms, as IPv6 or
+      IPv4.
+
+   *  _Multipath._ SCION ASes can select PCBs according to their
+      policies, and register the corresponding path segments, making
+      them available to other ASes and end hosts.  SCION hosts can
+      leverage a wide range of inter-domain paths, selecting them hop by
+      hop based on application requirements or path conditions.  Another
+      mechanism is BGP mutlipath [RFC7911], focus on providing a backup
+      path.  However, it does not allow end hosts to select end to end
+      path, and it faces scalability concerns typical of BGP, as
+      discussed in the above mentioned RFC.  Such concerns motivate an
+      alternative approach as SCION.
+
+   *  _Hop by hop path authorization._ SCION packets can only be
+      forwarded along authorized segments.  This is achieved thanks to
+      message authentication codes (MACs) within each hop field.  During
+      beaconing, each AS control's plane creates MACs, that are then
+      verified at forwarding.  This gives end hosts strong guarantees
+      about the path where the data is routed.  Other approaches, as
+      BGPSec ([RFC8205]), suffer from challenges with scalability, and
+      introduce circular dependencies [137] and global kill switches
+      [441] TODO: if we keep this, add citations from book
+
+   *  _Scalability._ SCION beaconing algorithm is around two orders of
+      magnitude more efficient than BGP due to the following reasons:
+      the routing process is divided in a process within each ISD and
+      one inter-ISD, SCION beaconing does not need to iteratively
+      converge, SCION makes AS-based announcements instead of BGP's
+      prefix-based announcements.  Please refer to [KRAHENBUHL2022] for
+      an in-depth study of SCION's scalability.
+
+   *  _Convergence time._ Since routing decisions are decoupled from
+      dissemination of path information, SCION does not suffer from the
+      long convergence times that affect path-vector protocols such as
+      BGP.  Path information is propagated across the network by PCBs in
+      times that are within the same order of magnitude of network round
+      trip time.  This means that SCION has the capability to restore
+      global reachability, even after catastrophic failures, in minutes.
+      In addition, in certain situations, BGP will never converge to a
+      stable state, or converge only non-deterministically (see
+      [GRIFFIN1999] and [RFC4264].  Convergence may also take too much
+      time [SAHOO2009].  TODO: Is SCION immune form such issues (as
+      there is no convergence)?
+
+   *  _Transparency._ SCION end-hosts have full visibility about the
+      inter-domain path their data is forwarded.  This is a property
+      that is missing in traditional IP networks, where have no
+      visibility nor guarantees on where their traffic is forwarded.
+      SCION makes it harder to redirect traffic through an adversary's
+      vantage point.
+
+   *  _Fault isolation._ As the SCION routing process is divided in
+      intra-ISD and inter-ISD, faults can have a more limited impact.
+      On the other hand, a single faulty BGP speaker can adversely
+      impact routing globally.  TODO: I would be a bit more precise:
+      what kind of fault would be contained?  A path service going nuts
+      or being compromised?  And BGP is bad, but maybe we should mention
+      that some of the issues (like hijacking) are mitigated by RPKI.
+
+   *  _Authenticated control messages._ BGP has no built-in security
+      mechanisms and does not provide any tools for ASes to authenticate
+      the information they receive through BGP update messages.  This
+      opens up a multitude of attack opportunities.  SCION control
+      messages, instead, are all authenticated.  In addition, SCION
+      comprises the SCION Control Message Protocol (SCMP), which is
+      analogous to the Internet Control Message Protocol (ICMP).  It
+      provides functionality for network diagnostics, such as ping and
+      traceroute, and error messages that signal packet processing or
+      network-layer problems.  TODO: I'm not sure how much I want to go
+      into SCMP here.. Especially as SCMP packets are only authenticated
+      if DRKey/SPAO are used
+
+   The SCION control plane is dependent on the control-plane PKI (#pki)
+   for authenticating control information.  TODO: Maybe we could go into
+   more detail (i.e. verifying a path with CP certificates?)  Maybe we
+   can do this in the PKI section?
+
+2.2.  Forwarding - Data plane
+
+   *  _Path selecction_ is made by end hosts, not routers
+
+   *  *Scalability* The use of forwarding tables in IP routers is time-
+      consuming, expensive, and energy-intensive.  Also, the constantly
+      growing size of forwarding tables causes storage problems.
+      Additionally, routers that keep state for network information can
+      suffer from denial-of-service (DoS) attacks exhausting the
+      router's state [SCHUCHARD2011].
+
+   *  _Recovery from failure_ TODO: rewrite text BGP only allows the
+      selection of a single path to a destination.  But having a multi-
+      path choice can be welcome in several situations, e.g., in the
+      case of a link failure, for load balancing, or when traffic is
+      routed based on different policies.
+
+2.2.1.  SCION and Segment Routing
+
+2.3.  Authentication - SCION PKI
+
+   TODO: why do we need a strong PKI? * Talk about monopoly vs oligopoly
+   and why this is important (but maybe in the CP part)? * Why we could
+   not just use RPKI 9that we use for origin validation) This makes the
+   SCION CP-PKI distinct from other PKIs (i.e. web PKI, RPKI), that
+   either have a single root of trust root (monopoly model), or rely on
+   a plethora of roots of trust (oligopoly model) leading to a trust
+   architecture that supports meaningful trust roots in a global
+   environment with inherently distrustful entities.
+
+   *  Absence of Kill Switches Monopolistic trust root architectures
+      such as DNSSEC and RPKI/BGPsec en- able entities in possession of
+      private keys to shut down portions of the names- pace controlled
+      by those keys.  The introduction of these kill switches into DNS
+      and BGP has created skepticism and concern over the potential
+      outages that could arise should private keys be misused or fall
+      into the wrong hands [441].
+
+2.3.1.  Issues with RPKI and BGPsec
+
+   RPKI and BGPsec try to address Internet's above-mentioned security
+   shortcomings, see also [RFC6480] and [RFC8205].  However, RPKI and
+   BGPsec introduce additional challenges, as shortly described below.
+
+   *  *RPKI and Route Origin Authorizations* Unfortunately, the Route
+      Origin Authorizations (ROAs) provided by RPKI only prevent the
+      simplest form of BGP hijacks.
+
+2.3.1.1.  Lack of Authentication
+
+   Authenticating digital data is becoming increasingly prevalent, as
+   adversaries exploit the absence of authentication to inject malicious
+   information.  Specifically, many network protocols do not use
+   authentication at all, leaving them exposed to multiple attacks:
+
+   *  Today's Internet lacks a fundamental mechanism to share a secret
+      key between two end hosts for secure end-to-end communication.
+      Existing approaches (i.e., SSH) resort to trust-on-first-use
+      (TOFU) approach, where an host's initial public key is accepted
+      without verification.
+
+   *  Infrastructures were added over time to provide authentication,
+      such as RPKI/BGPsec, TLS [RFC8446], and DNSSEC [RFC4033].
+      However, they are all sensitive to the compromise of a single
+      entity.
+
+   *  The Internet Control Message Protocol (ICMP) lacks an
+      authenticated counterpart, see [RFC4443] and [RFC0791].
+      Unauthenticated ICMP messages can potentially be used to affect or
+      even prevent traffic forwarding.  TODO: complete
+
+3.  Additional components
+
+   TODO: - Happy eyeballs (and how we extend things) - SIAM (& how it
+   piggybacks onto RPKI) - DrKey & dependencies -->
+   https://datatracker.ietf.org/doc/draft-garciapardo-panrg-drkey/ -
+   LightningFilter -->
+   https://datatracker.ietf.org/meeting/111/materials/slides-111-panrg-
+   lightning-filter-high-speed-traffic-filtering-based-on-drkey - SCMP
+
+4.  Transition mechanisms
+
+   TODO: * Mention that there are multiple mechanisms, requiring
+   different levels of changes and with different maturity. * For each
+   nmeachanism, provide a short summary of the approach, what it dies
+   and what protocols it reuses/extends * SIG * SBAS * SIAM
+
+5.  Dependency analysis
+
+6.  Motivations for greenfield approaches [RFC9049]
+
+   TODO: in our overview draft, we said that we would clarify the
+   motivations for developing SCION in another draft.  This one could be
+   the one.. * properties that want to achieve (motivating them with
+   RFC9049).  (Maybe we can do this per-component)? * why achieving
+   these properties requires a greenfield approach * why this is the
+   only way to differentiate from the previous failed approaches
+   mentioned in RFC9049.
+
+7.  Security Considerations
+
+   TODO Security
+
+8.  IANA Considerations
+
+   This document has no IANA actions.
+
+9.  References
+
+9.1.  Normative References
+
+   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
+              Requirement Levels", BCP 14, RFC 2119,
+              DOI 10.17487/RFC2119, March 1997,
+              <https://www.rfc-editor.org/rfc/rfc2119>.
+
+   [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
+              2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
+              May 2017, <https://www.rfc-editor.org/rfc/rfc8174>.
+
+9.2.  Informative References
+
+   [ANDERSEN2001]
+              Andersen, D., Balakrishnan, H., Kaashoek, F., and R.
+              Morris, "Resilient overlay networks", Proceedings of the
+              eighteenth ACM symposium on Operating systems principles,
+              DOI 10.1145/502034.502048, October 2001,
+              <https://doi.org/10.1145/502034.502048>.
+
+   [CHUAT22]  Chuat, L., Legner, M., Basin, D., Hausheer, D., Hitz, S.,
+              Mueller, P., and A. Perrig, "The Complete Guide to SCION",
+              ISBN 978-3-031-05287-3, 2022,
+              <https://doi.org/10.1007/978-3-031-05288-0>.
+
+   [COOPER2013]
+              Cooper, D., Heilman, E., Brogle, K., Reyzin, L., and S.
+              Goldberg, "On the risk of misbehaving RPKI authorities",
+              Proceedings of the Twelfth ACM Workshop on Hot Topics
+              in Networks, DOI 10.1145/2535771.2535787, November 2013,
+              <https://doi.org/10.1145/2535771.2535787>.
+
+   [DEKATER2022]
+              de Kater, C., Farrel, A., and A. Perrig, "SCION Overview",
+              2022, <https://datatracker.ietf.org/doc/draft-dekater-
+              panrg-scion-overview/>.
+
+   [DERUITER2021]
+              de Ruiter, J. and C. Schutijser, "Next-generation internet
+              at terabit speed: SCION in P4", Proceedings of the 17th
+              International Conference on emerging Networking
+              EXperiments and Technologies, DOI 10.1145/3485983.3494839,
+              December 2021, <https://doi.org/10.1145/3485983.3494839>.
+
+   [GRIFFIN1999]
+              Griffin, T. and G. Wilfong, "An analysis of BGP
+              convergence properties", ACM SIGCOMM Computer
+              Communication Review Vol. 29, pp. 277-288,
+              DOI 10.1145/316194.316231, October 1999,
+              <https://doi.org/10.1145/316194.316231>.
+
+   [HITZ2021] Hitz, S., "Demonstrating the reliability and resilience of
+              Secure Swiss Finance Network", 2021,
+              <https://perma.cc/4H3Q-WZNG>.
+
+   [KATZ2012] Katz-Bassett, E., Scott, C., Choffnes, D., Cunha, Í.,
+              Valancius, V., Feamster, N., Madhyastha, H., Anderson, T.,
+              and A. Krishnamurthy, "LIFEGUARD: practical repair of
+              persistent route failures", ACM SIGCOMM Computer
+              Communication Review Vol. 42, pp. 395-406,
+              DOI 10.1145/2377677.2377756, September 2012,
+              <https://doi.org/10.1145/2377677.2377756>.
+
+   [KLENZE2021]
+              Klenze, T., Sprenger, C., and D. Basin, "Formal
+              Verification of Secure Forwarding Protocols", 2021 IEEE
+              34th Computer Security Foundations Symposium (CSF),
+              DOI 10.1109/csf51468.2021.00018, June 2021,
+              <https://doi.org/10.1109/csf51468.2021.00018>.
+
+   [KRAHENBUHL2022]
+              Krähenbühl, C., Tabaeiaghdaei, S., Glοοr, C., Kwon, J.,
+              Perrig, A., Hausheer, D., and D. Roos, "Deployment and
+              Scalability of an Inter-Domain Multi-Path Routing
+              Infrastructure", 2022,
+              <https://netsec.ethz.ch/publications/
+              papers/2021_conext_deployment.pdf>.
+
+   [KUSHMAN2007]
+              Kushman, N., Kandula, S., and D. Katabi, "Can you hear me
+              now?!: it must be BGP", ACM SIGCOMM Computer Communication
+              Review Vol. 37, pp. 75-84, DOI 10.1145/1232919.1232927,
+              March 2007, <https://doi.org/10.1145/1232919.1232927>.
+
+   [LABOVITZ2000]
+              Labovitz, C., Ahuja, A., Bose, A., and F. Jahanian,
+              "Delayed Internet routing convergence", Proceedings of the
+              conference on Applications, Technologies, Architectures,
+              and Protocols for Computer Communication - SIGCOMM '00,
+              DOI 10.1145/347059.347428, 2000,
+              <https://doi.org/10.1145/347059.347428>.
+
+   [LEGNER2020]
+              Legner, M., Klenze, T., Wyss, M., Sprenger, C., and A.
+              Perrig, "EPIC: Every Packet Is Checked in the Data Plane
+              of a Path-Aware Internet", 2020,
+              <https://www.usenix.org/conference/usenixsecurity20/
+              presentation/legner>.
+
+   [LI2014]   Li, Q., Hu, Y., and X. Zhang, "Even Rockets Cannot Make
+              Pigs Fly Sustainably: Can BGP be Secured with BGPsec?",
+              Proceedings 2014 Workshop on Security of Emerging
+              Networking Technologies, DOI 10.14722/sent.2014.23001,
+              2014, <https://doi.org/10.14722/sent.2014.23001>.
+
+   [LYCHEV2013]
+              Lychev, R., Goldberg, S., and M. Schapira, "BGP security
+              in partial deployment: is the juice worth the squeeze?",
+              ACM SIGCOMM Computer Communication Review Vol. 43, pp.
+              171-182, DOI 10.1145/2534169.2486010, September 2013,
+              <https://doi.org/10.1145/2534169.2486010>.
+
+   [MORILLO2021]
+              Morillo, R., Furuness, J., Morris, C., Breslin, J.,
+              Herzberg, A., and B. Wang, "ROV++: Improved Deployable
+              Defense against BGP Hijacking", Proceedings 2021 Network
+              and Distributed System Security Symposium,
+              DOI 10.14722/ndss.2021.24438, 2021,
+              <https://doi.org/10.14722/ndss.2021.24438>.
+
+   [PANRG-INTERIM-Min]
+              "Path Aware Networking Research Group - Interim 106
+              Minutes", June 2022,
+              <https://datatracker.ietf.org/meeting/interim-2022-panrg-
+              01/materials/minutes-interim-2022-panrg-
+              01-202206011700-00>.
+
+   [PERRIG2017]
+              Perrig, A., Szalachowski, P., Reischuk, R., and L. Chuat,
+              "SCION: A Secure Internet Architecture",
+              ISBN 978-3-319-67079-9, 2017,
+              <https://doi.org/10.1007/978-3-319-67080-5>.
+
+   [RFC0791]  Postel, J., "Internet Protocol", STD 5, RFC 791,
+              DOI 10.17487/RFC0791, September 1981,
+              <https://www.rfc-editor.org/rfc/rfc791>.
+
+   [RFC4033]  Arends, R., Austein, R., Larson, M., Massey, D., and S.
+              Rose, "DNS Security Introduction and Requirements",
+              RFC 4033, DOI 10.17487/RFC4033, March 2005,
+              <https://www.rfc-editor.org/rfc/rfc4033>.
+
+   [RFC4264]  Griffin, T. and G. Huston, "BGP Wedgies", RFC 4264,
+              DOI 10.17487/RFC4264, November 2005,
+              <https://www.rfc-editor.org/rfc/rfc4264>.
+
+   [RFC4443]  Conta, A., Deering, S., and M. Gupta, Ed., "Internet
+              Control Message Protocol (ICMPv6) for the Internet
+              Protocol Version 6 (IPv6) Specification", STD 89,
+              RFC 4443, DOI 10.17487/RFC4443, March 2006,
+              <https://www.rfc-editor.org/rfc/rfc4443>.
+
+   [RFC5218]  Thaler, D. and B. Aboba, "What Makes for a Successful
+              Protocol?", RFC 5218, DOI 10.17487/RFC5218, July 2008,
+              <https://www.rfc-editor.org/rfc/rfc5218>.
+
+   [RFC6480]  Lepinski, M. and S. Kent, "An Infrastructure to Support
+              Secure Internet Routing", RFC 6480, DOI 10.17487/RFC6480,
+              February 2012, <https://www.rfc-editor.org/rfc/rfc6480>.
+
+   [RFC6830]  Farinacci, D., Fuller, V., Meyer, D., and D. Lewis, "The
+              Locator/ID Separation Protocol (LISP)", RFC 6830,
+              DOI 10.17487/RFC6830, January 2013,
+              <https://www.rfc-editor.org/rfc/rfc6830>.
+
+   [RFC7911]  Walton, D., Retana, A., Chen, E., and J. Scudder,
+              "Advertisement of Multiple Paths in BGP", RFC 7911,
+              DOI 10.17487/RFC7911, July 2016,
+              <https://www.rfc-editor.org/rfc/rfc7911>.
+
+   [RFC8170]  Thaler, D., Ed., "Planning for Protocol Adoption and
+              Subsequent Transitions", RFC 8170, DOI 10.17487/RFC8170,
+              May 2017, <https://www.rfc-editor.org/rfc/rfc8170>.
+
+   [RFC8205]  Lepinski, M., Ed. and K. Sriram, Ed., "BGPsec Protocol
+              Specification", RFC 8205, DOI 10.17487/RFC8205, September
+              2017, <https://www.rfc-editor.org/rfc/rfc8205>.
+
+   [RFC8446]  Rescorla, E., "The Transport Layer Security (TLS) Protocol
+              Version 1.3", RFC 8446, DOI 10.17487/RFC8446, August 2018,
+              <https://www.rfc-editor.org/rfc/rfc8446>.
+
+   [RFC9049]  Dawkins, S., Ed., "Path Aware Networking: Obstacles to
+              Deployment (A Bestiary of Roads Not Taken)", RFC 9049,
+              DOI 10.17487/RFC9049, June 2021,
+              <https://www.rfc-editor.org/rfc/rfc9049>.
+
+   [RFC9217]  Trammell, B., "Current Open Questions in Path-Aware
+              Networking", RFC 9217, DOI 10.17487/RFC9217, March 2022,
+              <https://www.rfc-editor.org/rfc/rfc9217>.
+
+   [ROTHENBERGER2017]
+              Rothenberger, B., Asoni, D., Barrera, D., and A. Perrig,
+              "Internet Kill Switches Demystified", Proceedings of the
+              10th European Workshop on Systems Security,
+              DOI 10.1145/3065913.3065922, April 2017,
+              <https://doi.org/10.1145/3065913.3065922>.
+
+   [SAHOO2009]
+              Sahoo, A., Kant, K., and P. Mohapatra, "BGP convergence
+              delay after multiple simultaneous router failures:
+              Characterization and solutions", Computer
+              Communications Vol. 32, pp. 1207-1218,
+              DOI 10.1016/j.comcom.2009.03.009, May 2009,
+              <https://doi.org/10.1016/j.comcom.2009.03.009>.
+
+   [SCHUCHARD2011]
+              Schuchard, M., Mohaisen, A., Foo Kune, D., Hopper, N.,
+              Kim, Y., and E. Vasserman, "Losing control of the
+              internet: using the data plane to attack the control
+              plane", Proceedings of the 17th ACM conference on Computer
+              and communications security - CCS '10,
+              DOI 10.1145/1866307.1866411, 2010,
+              <https://doi.org/10.1145/1866307.1866411>.
+
+Acknowledgments
+
+   TODO acknowledge.
+
+Authors' Addresses
+
+   Nicola Rustignoli
+   ETH Zuerich
+   Email: nicola.rustignoli@inf.ethz.ch
+
+
+   Corine de Kater
+   ETH Zuerich
+   Email: corine.dekatermuehlhaeuser@inf.ethz.ch
+
+
+   Adrian Perrig
+   ETH Zuerich
+   Email: adrian.perrig@inf.ethz.ch
