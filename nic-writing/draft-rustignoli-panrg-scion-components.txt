@@ -5,8 +5,8 @@
 Path Aware Networking RG                                   N. Rustignoli
 Internet-Draft                                               C. de Kater
 Intended status: Informational                                 A. Perrig
-Expires: 31 December 2022                                    ETH Zuerich
-                                                            29 June 2022
+Expires: 2 January 2023                                      ETH Zuerich
+                                                             1 July 2022
 
 
                        SCION Components Analysis
@@ -19,11 +19,12 @@ Abstract
    of components.
 
    This document illustrates the dependencies between its core
-   components, extensions.  We also discuss the relationship between
+   components and extensions.  We also discuss the relationship between
    SCION and existing protocols, with focus on illustrating which
    existing protocols are reused/extended.  We also describe the
-   motivations behind cases where a greenfield approach is needed.  We
-   also briefly touch on the maturity level of components.
+   motivations behind cases where a greenfield approach is needed, and
+   the properties that can be achieved thanks to it.  We then briefly
+   touch on the maturity level of components.
 
 About This Document
 
@@ -57,7 +58,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 31 December 2022.
+   This Internet-Draft will expire on 2 January 2023.
 
 Copyright Notice
 
@@ -73,24 +74,22 @@ Copyright Notice
 Table of Contents
 
    1.  Introduction
-     1.1.  Conventions and Definitions
-   2.  Minimal stack - core components
-     2.1.  Routing - Control Plane
-       2.1.1.  Key properties in relationship to existing protocols
-     2.2.  Forwarding - Data plane
-       2.2.1.  Key properties in relationship to existing protocols
-       2.2.2.  SCION and Segment Routing
-     2.3.  Authentication - SCION PKI
-       2.3.1.  SCION and RPKI
-   3.  Transition mechanisms
-   4.  Additional components
-   5.  Dependency analysis
-   6.  Conclusions
-   7.  Security Considerations
-   8.  IANA Considerations
-   9.  References
-     9.1.  Normative References
-     9.2.  Informative References
+   2.  Design goal: fundamental properties
+   3.  Minimal stack - core components
+     3.1.  Routing - Control Plane
+       3.1.1.  Key properties in relationship to existing protocols
+     3.2.  Forwarding - Data plane
+       3.2.1.  Key properties in relationship to existing protocols
+       3.2.2.  SCION and Segment Routing
+     3.3.  Authentication - SCION PKI
+       3.3.1.  SCION and RPKI
+   4.  Transition mechanisms
+   5.  Additional components
+   6.  Dependency analysis
+   7.  Conclusions
+   8.  Security Considerations
+   9.  IANA Considerations
+   10. Informative References
    Acknowledgments
    Authors' Addresses
 
@@ -99,7 +98,7 @@ Table of Contents
    While SCION was initially developed in academia, the architecture has
    now "slipped out of the lab" and counts its early productive
    deployments (including the Swiss inter-banking network SSFN).  The
-   architecture consists of a system of related components, some of
+   architecture is composed of a system of related components, some of
    which are essential to set up end to end SCION connectivity, while
    others are add-ons aiming at providing additional functionality,
    security, or backwards compatibility.  Discussions at
@@ -110,24 +109,25 @@ Table of Contents
    each component specification, rather to provide a basis for
    discussions about the engineering decisions that made SCION what it
    is.  We first start from core components, that form a SCION minimal
-   stack.  We then move onto extensions and additional components, some
-   of which provide compatibility mechanisms between SCION and existing
-   protocols.
+   stack.  We then move onto extensions and additional components.
+
+   TODO: Feedback Corine.. in the introduction, reiterate why the
+   properties that SCION offers are actually needed and relevant..
+   Adrian wanted to actually achieve them.  For each property, we can
+   first stress how the current Internet fulfills these properties, and
+   then stress why SCION achieves them better.  We can do this for the 3
+   core components.  So overall, for each property, first explain why
+   they are important, why they cannot be achieved, and why SCION's
+   approach achieves them.
 
    Before reading this document, please refer to
    [I-D.dekater-scion-overview] for a generic overview of SCION and its
    components, the problems it solves, and existing deployments.  For an
    in-depth description of SCION, please refer to [CHUAT22].
 
-1.1.  Conventions and Definitions
+2.  Design goal: fundamental properties
 
-   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
-   "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
-   "OPTIONAL" in this document are to be interpreted as described in
-   BCP 14 [RFC2119] [RFC8174] when, and only when, they appear in all
-   capitals, as shown here.
-
-2.  Minimal stack - core components
+3.  Minimal stack - core components
 
    In order to establish end to end connectivity, SCION relies on three
    main components.  SCION's data plane carries out secure path-aware
@@ -153,15 +153,15 @@ Table of Contents
    uniform trust environment (i.e., a common jurisdiction).  They can
    transparently define trust relationships between parts of the network
    by deciding wether to trust other ISDs.  SCION therefore relies on an
-   unique trust model, which is markably different from other PKI.  We
-   clarify the motivation behind this in Authentication (Section 2.3)
+   unique trust model, which is different from other PKI.  We clarify
+   the motivation behind this in Authentication (Section 3.3)
 
    All above mentioned core components are deployed in production (i.e.,
    they are in use within the the SSFN, the Swiss Finance Network).
    There are commercial implementations of all core components
    (including a high performance data-plane).
 
-2.1.  Routing - Control Plane
+3.1.  Routing - Control Plane
 
    The SCION control plane's main purpose is to discover and disseminate
    routing information, in the form of path segments.  Path exploration
@@ -174,7 +174,7 @@ Table of Contents
    overview of the process to create and disseminate path information,
    refer to [I-D.dekater-scion-overview] section 1.2.2.
 
-2.1.1.  Key properties in relationship to existing protocols
+3.1.1.  Key properties in relationship to existing protocols
 
    On a first sight, it might seem that SCION control plane takes care
    of similar duties as of BGP.  While both focus on disseminating
@@ -273,7 +273,15 @@ Table of Contents
    TODO: add a few sentences on why the CP avoids mistakes in lessons
    learned from RFC9049
 
-2.2.  Forwarding - Data plane
+   TODO: Corine feedback: maybe it is good to have global properties
+   mentione before digging into specific components? - _Security_: TODO:
+   overview of why SCION is secure
+
+   *  _Transparency_
+
+   *  _Path awareness_
+
+3.2.  Forwarding - Data plane
 
    SCION is an inter-domain network architecture and as such does not
    interfere with intra-domain forwarding.  This corresponds to the
@@ -299,7 +307,7 @@ Table of Contents
    sometimes encapsulated into an IP packet, for backwards
    compatibility.
 
-2.2.1.  Key properties in relationship to existing protocols
+3.2.1.  Key properties in relationship to existing protocols
 
    Thanks to its data plane, SCION achieves properties that are
    difficult to achieve when exclusively extending existing protocols.
@@ -351,7 +359,7 @@ Table of Contents
       SCION by interposing a SCION to IP Gateway (SIG).  TODO: reference
       if we talk more about it later.
 
-2.2.2.  SCION and Segment Routing
+3.2.2.  SCION and Segment Routing
 
    Given its path-aware properties, some of SCION's characteristics
    might seem similar to the ones provided by Segment Routing (SR)
@@ -370,9 +378,11 @@ Table of Contents
    their path-aware properties remain for now an open question.
 
    TODO: Maybe cite https://datatracker.ietf.org/doc/draft-li-spring-
-   srv6-security-consideration/
+   srv6-security-consideration/ TODO: maybe this paragraph can go at the
+   end, in a paragraph where we discuss SICON vs related work (inclding
+   BGP with colors, semantic routing, ...)
 
-2.3.  Authentication - SCION PKI
+3.3.  Authentication - SCION PKI
 
    SCION's control plane messages are all authenticated.  The
    verification of those messages relies on a public-key infrastructure
@@ -459,7 +469,7 @@ Table of Contents
    bootstrapped with an initial ceremony.  Subsequent updates to the
    root of trust are handled automatically.
 
-2.3.1.  SCION and RPKI
+3.3.1.  SCION and RPKI
 
    One might ask why SCION could not just rely on RPKI.  Summarising on
    the points above, the CP-PKI distinguishes itself because of the
@@ -474,7 +484,7 @@ Table of Contents
    coexistence mechanisms (SIAM) relies on RPKI for IP origin
    attestation.
 
-3.  Transition mechanisms
+4.  Transition mechanisms
 
    As we presented in [I-D.dekater-scion-overview], SCION comprises
    multiple transition mechanisms that allow an incremental deployment
@@ -491,7 +501,7 @@ Table of Contents
       enables legacy IP end hosts to benefit from a SCION deployment by
       transparently obtaining improved security and availability
       properties.  SCION routing policies can be configured on SIGs, in
-      order to selsect appropriate SCION paths based on application
+      order to select appropriate SCION paths based on application
       requirements.  SIGs have the ability to dynamically exchange
       prefix information, currently using their own encapsulation and
       prefix exchange protocol.  This does not exclude reusing existing
@@ -520,16 +530,19 @@ Table of Contents
       system and I'm not so sure we should talk about it.  I'm afraid it
       might distract the focus.
 
-4.  Additional components
+5.  Additional components
 
-   TODO: Add some description - Happy eyeballs (and how we extend it) -
-   DrKey & dependencies --> [I-D.garciapardo-drkey] - LightningFilter
-   --> https://datatracker.ietf.org/meeting/111/materials/slides-111-
-   panrg-lightning-filter-high-speed-traffic-filtering-based-on-drkey -
-   SCMP - COLIBRI (Bandwidth Reservations) - End-host stack - _RHINE_
-   (formerly RAINS)
+   TODO: Mayne instead of having bullet points, we can just have a
+   paragraph.  This way we don't give too much importance about this
+   section. - _End-host stack_. SCION can be deployed though the use of
+   SICON-to-IP conversion or natively on end hosts. - Happy eyeballs
+   (and how we extend it) - DrKey & dependencies -->
+   [I-D.garciapardo-drkey] - LightningFilter -->
+   https://datatracker.ietf.org/meeting/111/materials/slides-111-panrg-
+   lightning-filter-high-speed-traffic-filtering-based-on-drkey - SCMP -
+   COLIBRI (Bandwidth Reservations) - _RHINE_ (formerly RAINS)
 
-5.  Dependency analysis
+6.  Dependency analysis
 
    This section briefly discusses dependencies between SCION's core
    components, with the goal of facilitating a discussion on
@@ -560,35 +573,22 @@ Table of Contents
 
    *  Only other components (i.e., SCMP) TODO
 
-6.  Conclusions
+7.  Conclusions
 
    We described key SCION components with their properties and
    dependencies.  TODO: I would add some comments on how SCION avoids
    some of the issues mentioned in [RFC9049] Also mention that the most
    important core components are formally verified.
 
-7.  Security Considerations
+8.  Security Considerations
 
    TODO Security
 
-8.  IANA Considerations
+9.  IANA Considerations
 
    This document has no IANA actions.
 
-9.  References
-
-9.1.  Normative References
-
-   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
-              Requirement Levels", BCP 14, RFC 2119,
-              DOI 10.17487/RFC2119, March 1997,
-              <https://www.rfc-editor.org/rfc/rfc2119>.
-
-   [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
-              2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
-              May 2017, <https://www.rfc-editor.org/rfc/rfc8174>.
-
-9.2.  Informative References
+10.  Informative References
 
    [ANDERSEN2001]
               Andersen, D., Balakrishnan, H., Kaashoek, F., and R.
