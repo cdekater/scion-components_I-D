@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2022-06-30T00:25:47.998444+00:00",
+  "timestamp": "2022-07-03T00:29:32.999162+00:00",
   "repo": "scionassociation/scion-components_I-D",
   "labels": [
     {
@@ -61,21 +61,87 @@
       "authorAssociation": "MEMBER",
       "assignees": [],
       "labels": [],
-      "body": "\n\n<!-- Reviewable:start -->\nThis change is\u2002[<img src=\"https://reviewable.io/review_button.svg\" height=\"34\" align=\"absmiddle\" alt=\"Reviewable\"/>](https://reviewable.io/reviews/scionassociation/scion-components_i-d/1)\n<!-- Reviewable:end -->\n",
+      "body": "<!-- Reviewable:start -->\r\nThis change is\u2002[<img src=\"https://reviewable.io/review_button.svg\" height=\"34\" align=\"absmiddle\" alt=\"Reviewable\"/>](https://reviewable.io/reviews/scionassociation/scion-components_i-d/1)\r\n<!-- Reviewable:end -->\r\n\r\n- [x] Start with a section describing the properties we think a good global Internetwork must contain: security, scalability, availability in case of failure, transparency, multi-path/flexibility, end-host control... Then that SCION was developed to meet these property requirements.\r\n- [ ] Discussion of each property for each core component (I am not sure about the structure: whether to take the core components as upper level, and the properties as the lower level, or the other way around).\r\nFor each property: how SCION achieves this property, in relation to the existing Internet. I think you can re-use all property content you already wrote, this is more a matter of re-organizing the content.=\r\n- [ ] Related work section: RPKI,  BGPSec, Semantic Routing (Add)\r\nWe should make it clear: what protocols are we reusing, which ones are we extending, which ones are we replacing and not reusing \u2026. We should explain clearly why we are not reusing existing protocols.\r\n- [ ] Conclude with dependency analysis, which explains very nicely that the core components cannot really exist on their own (except maybe for the CP-PKI). \r\n- [ ] Transition mechanism & additional components: remove or rework\r\n\r\nGeneral feedback: \r\n- [ ] Make it more clear why we do not reuse existing protocols\r\n- [ ]  RFC9049: use it as a filter for our ideas. Explain why SCION considers lessons learned\r\n- [ ] Use RFC 7418  to explain and motivate what should go into IETF and what should go into IRTF.",
       "createdAt": "2022-06-28T19:14:00Z",
-      "updatedAt": "2022-06-29T16:23:04Z",
+      "updatedAt": "2022-07-01T23:04:00Z",
       "baseRepository": "scionassociation/scion-components_I-D",
       "baseRefName": "main",
       "baseRefOid": "90269ef5f6642adf09be6d9739ce0628dc1f137e",
       "headRepository": "scionassociation/scion-components_I-D",
       "headRefName": "nic-writing",
-      "headRefOid": "3da4ef9ab5b944b7f35383bf93eaa6bf76992d77",
+      "headRefOid": "a117e792f23b355d8e6d599a1c33da281077e165",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
       "comments": [],
-      "reviews": []
+      "reviews": [
+        {
+          "id": "PRR_kwDOHiDowc49EWls",
+          "commit": {
+            "abbreviatedOid": "3da4ef9"
+          },
+          "author": "cdekater",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "\n\n> *[Reviewable](https://reviewable.io/reviews/scionassociation/scion-components_i-d/1)* status: 0 of 1 files reviewed, 3 unresolved discussions (waiting on @cdekater and @nicorusti)\n\n___\n*[`draft-rustignoli-panrg-scion-components.md` line 280 at r1](https://reviewable.io/reviews/scionassociation/scion-components_i-d/1#-N5nmIWZ-ERS-xKupTJY:-N5nmIWZ-ERS-xKupTJZ:bc7qy2z) ([raw file](https://github.com/scionassociation/scion-components_i-d/blob/3da4ef9ab5b944b7f35383bf93eaa6bf76992d77/draft-rustignoli-panrg-scion-components.md#L280)):*\n> ```Markdown\n> \n> While SCION  was initially developed in academia, the architecture  has now \"slipped out of the lab\" and counts its early productive deployments (including the Swiss inter-banking network SSFN).\n> The architecture consists of a system of related components, some of which are  essential to set up end to end SCION connectivity, while others are add-ons aiming at providing additional functionality, security, or backwards compatibility. Discussions at {{PANRG-INTERIM-Min}} showed the need to describe the relationships between SCION's core components.\n> ```\n\nI am not sure whether the PANRG people wanted to know more about the relationship between SCION's core components. My impression was that they wanted to know (1) what is the minimal SCION stack needed to make SCION work, and (2) the relationship between SCION and existing protocols. More precisely: Which existing protocols does SCION use, which not, and why not.\n  \n___\n*[`draft-rustignoli-panrg-scion-components.md` line 303 at r1](https://reviewable.io/reviews/scionassociation/scion-components_i-d/1#-N5noIv5A2tYwt1L_hNA:-N5noIv5A2tYwt1L_hNB:b-2js1rb) ([raw file](https://github.com/scionassociation/scion-components_i-d/blob/3da4ef9ab5b944b7f35383bf93eaa6bf76992d77/draft-rustignoli-panrg-scion-components.md#L303)):*\n> ```Markdown\n> ISD members share an uniform trust environment (i.e., a common jurisdiction).\n> They can transparently define trust relationships between parts of the network by deciding wether to trust other ISDs.\n> SCION therefore relies on an unique trust model, which is markably different from other PKI. We clarify the motivation behind this in [Authentication](#pki)\n> ```\n\nMaybe not use the word \"markably\"? Different is enough.\n___\n*[`draft-rustignoli-panrg-scion-components.md` line 316 at r1](https://reviewable.io/reviews/scionassociation/scion-components_i-d/1#-N5nrjzE98mm_k5BfYoc:-N5nrjzFAJT9hOE4QS8b:bv1muc7) ([raw file](https://github.com/scionassociation/scion-components_i-d/blob/3da4ef9ab5b944b7f35383bf93eaa6bf76992d77/draft-rustignoli-panrg-scion-components.md#L316)):*\n> ```Markdown\n> \n> ### Key properties in relationship to existing protocols\n> On a first sight, it might seem that SCION control plane takes care of similar duties as of BGP. While both focus on disseminating routing information, there are substantial differences in the properties provided and mechanisms. We describe the core properties provided by the SCION control plane, and its relationships with existing protocols.\n> ```\n\nI think the properties approach is good. But maybe we should first describe why these properties are important in general, something like that we think a \"good\" Internet needs to include these properties, that SCION tries to address/meet these properties, and that SCION may therefore differ from existing protocols in those cases where the existing protocols are not able to sufficiently meet the properties. \n\n\n<!-- Sent from Reviewable.io -->\n",
+          "createdAt": "2022-06-30T09:22:12Z",
+          "updatedAt": "2022-06-30T09:22:12Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOHiDowc49EZLD",
+          "commit": {
+            "abbreviatedOid": "3da4ef9"
+          },
+          "author": "nicorusti",
+          "authorAssociation": "MEMBER",
+          "state": "COMMENTED",
+          "body": "\n\n> *[Reviewable](https://reviewable.io/reviews/scionassociation/scion-components_i-d/1)* status: 0 of 1 files reviewed, 3 unresolved discussions (waiting on @cdekater and @nicorusti)\n\n___\n*[`draft-rustignoli-panrg-scion-components.md` line 280 at r1](https://reviewable.io/reviews/scionassociation/scion-components_i-d/1#-N5nmIWZ-ERS-xKupTJY:-N5nwGcq1GAN5IY3AyhF:b-opfcx8) ([raw file](https://github.com/scionassociation/scion-components_i-d/blob/3da4ef9ab5b944b7f35383bf93eaa6bf76992d77/draft-rustignoli-panrg-scion-components.md#L280)):*\n> I am not sure whether the PANRG people wanted to know more about the relationship between SCION's core components. My impression was that they wanted to know (1) what is the minimal SCION stack needed to make SCION work, and (2) the relationship between SCION and existing protocols. More precisely: Which existing protocols does SCION use, which not, and why not.\n\nBut there was a lot of discussion about splitting components, which is not a good idea. THis is why I want to stress that the 3 core components are quite tightly interlinked. \n \n\n\n<!-- Sent from Reviewable.io -->\n",
+          "createdAt": "2022-06-30T09:29:52Z",
+          "updatedAt": "2022-06-30T09:29:52Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOHiDowc49Fu1n",
+          "commit": {
+            "abbreviatedOid": "3da4ef9"
+          },
+          "author": "cdekater",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "Hi Nicola,\n\nI like your draft, it already contains a lot of really good content, and I also like your style of writing very much! \n\nAs we already discussed, I would just restructure it a bit:\n1. Start with a section describing the properties we think a good global Internetwork must contain: security, scalability, availability in case of failure, transparency, multi-path/flexibility, end-host control...\n2. Then that SCION was developed  to meet these property requirements.\n3. Description of SCION minimal stack (this content is already there).\n4. Discussion of each property for each core component (I am not sure about the structure: whether to take the core components as upper level, and the properties as the lower level, or the other way around).\n-   For each property: how SCION achieves this property, in relation to the existing Internet. I think you can re-use all property content you already wrote, this is more a matter of re-organizing the content. \n5. I like the sections about SCION and Segment Routing/RPKI. I would add these sections after the above discussion, under \"Related work\" or something alike. Maybe also add sections on Semantic Routing/BGPsec?\n6.  You could finish the draft with the dependency analysis, which explains very nicely that the core components cannot really exist on their own (except maybe for the CP-PKI).\n7. I am not sure about the sections Transition Mechanisms and Additional Components. Regarding the Transition Mechanisms, I would either only mention SIG, or refer to \"my\" draft entirely. And I would not mention the additional components at all. I think the draft has already enough content without it \n\n> *[Reviewable](https://reviewable.io/reviews/scionassociation/scion-components_i-d/1#-:-N5onJUXBj-AyVGS0egU:b-2n815r)* status: 0 of 1 files reviewed, 3 unresolved discussions (waiting on @cdekater and @nicorusti)\n\n___\n*[`draft-rustignoli-panrg-scion-components.md` line 280 at r1](https://reviewable.io/reviews/scionassociation/scion-components_i-d/1#-N5nmIWZ-ERS-xKupTJY:-N5okjWd8ePW9ibqFaSH:b-c3tnvp) ([raw file](https://github.com/scionassociation/scion-components_i-d/blob/3da4ef9ab5b944b7f35383bf93eaa6bf76992d77/draft-rustignoli-panrg-scion-components.md#L280)):*\n<details><summary><i>Previously, nicorusti (Nicola Rustignoli) wrote\u2026</i></summary><blockquote>\n\n> I am not sure whether the PANRG people wanted to know more about the relationship between SCION's core components. My impression was that they wanted to know (1) what is the minimal SCION stack needed to make SCION work, and (2) the relationship between SCION and existing protocols. More precisely: Which existing protocols does SCION use, which not, and why not.\n\nBut there was a lot of discussion about splitting components, which is not a good idea. THis is why I want to stress that the 3 core components are quite tightly interlinked. \n \n\n</blockquote></details>\n\nGood point!\n\n\n<!-- Sent from Reviewable.io -->\n",
+          "createdAt": "2022-06-30T13:50:30Z",
+          "updatedAt": "2022-06-30T13:50:30Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOHiDowc49Fve4",
+          "commit": {
+            "abbreviatedOid": "3da4ef9"
+          },
+          "author": "cdekater",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "\n\n> Reviewed 1 of 1 files at r1, all commit messages.\n> *[Reviewable](https://reviewable.io/reviews/scionassociation/scion-components_i-d/1)* status: all files reviewed, 3 unresolved discussions (waiting on @nicorusti)\n\n\n\n<!-- Sent from Reviewable.io -->\n",
+          "createdAt": "2022-06-30T13:52:06Z",
+          "updatedAt": "2022-06-30T13:52:06Z",
+          "comments": []
+        },
+        {
+          "id": "PRR_kwDOHiDowc49LpIs",
+          "commit": {
+            "abbreviatedOid": "ba4d14d"
+          },
+          "author": "nicorusti",
+          "authorAssociation": "MEMBER",
+          "state": "COMMENTED",
+          "body": "\n\n> *[Reviewable](https://reviewable.io/reviews/scionassociation/scion-components_i-d/1)* status: 0 of 1 files reviewed, 4 unresolved discussions (waiting on @cdekater and @nicorusti)\n\n___\n*[`draft-rustignoli-panrg-scion-components.md` line 303 at r1](https://reviewable.io/reviews/scionassociation/scion-components_i-d/1#-N5noIv5A2tYwt1L_hNA:-N5u3sbD83iWHbE6n6af:b-896fix) ([raw file](https://github.com/scionassociation/scion-components_i-d/blob/3da4ef9ab5b944b7f35383bf93eaa6bf76992d77/draft-rustignoli-panrg-scion-components.md#L303)):*\n<details><summary><i>Previously, cdekater wrote\u2026</i></summary><blockquote>\n\nMaybe not use the word \"markably\"? Different is enough.\n</blockquote></details>\n\nDone.\n___\n*[`draft-rustignoli-panrg-scion-components.md` line 320 at r2](https://reviewable.io/reviews/scionassociation/scion-components_i-d/1#-N5uj24z5x17ziRhE5Xh:-N5uj25-1-6RvtPfA2qH:b-vi1x04) ([raw file](https://github.com/scionassociation/scion-components_i-d/blob/ba4d14d59292aee7199f2dace77cb5acba460c2d/draft-rustignoli-panrg-scion-components.md#L320)):*\n> ```Markdown\n> \n> ```\n\n@cdekater I added this section. Besides that, I could add even more. Something like: \n```\nThere are many use cases where existing protocols show the limitations of existing inter-domain routing approaches: \n- Cloud to customer connectivity:  \n- Enterprise communication: \n- ... \n```\n\nBut I'd update the other draft (where we already have a motivation paragraph), rather than having a \"duplicate\" motivation paragraph here. Thoughts?  \n\n\n\n_Code quote:_\n```Markdown\n## Design goals\nSCION was created from inception with the intention of providing the following properties for inter-domain communication.\n\n- *Availability*. SCION is meant to provide highly available communication. The focus is not only on handling failures (both on the last hop or anywhere along the path), but also on allowing communication in presence of adversaries.\nAvailability is fundamental as applications move to cloud datacenters and enterprises increasingly rely on Internet communication for mission-critical communication.\n\n- *Security*. SCION was designed by security researchers with the goal of making most network-based and routing attacks either impossible or easy to mitigate.\nSecurity means also offering end-hosts transparency and control over forwarding paths. In addition, SCION's design starts from the assumption that any two entities on the global Internet do not mutually trust each other.\nSCION therefore enables trust agility, allowing users to decide the roots of trust they wish to rely upon.\n\n- *Scalability*.  Security and high availability should not result in compromises on scalability.\nThe S in SCION, indeed, stands for scalability.\nThe goal is to achieve routing that scales with network growth, both in the control plane and in the data plane (forwarding should be as efficient as possible).\n```\n\n\n<!-- Sent from Reviewable.io -->\n",
+          "createdAt": "2022-07-01T17:09:38Z",
+          "updatedAt": "2022-07-01T17:09:38Z",
+          "comments": []
+        }
+      ]
     }
   ]
 }
