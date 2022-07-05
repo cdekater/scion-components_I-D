@@ -1171,13 +1171,16 @@ We also describe the motivations behind cases where a greenfield approach is nee
                 <p id="section-toc.1-1.2.2.4.1"><a href="#section-2.4" class="xref">2.4</a>.  <a href="#name-related-work" class="xref">Related work</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.4.2.1">
-                    <p id="section-toc.1-1.2.2.4.2.1.1"><a href="#section-2.4.1" class="xref">2.4.1</a>.  <a href="#name-scion-and-segment-routing" class="xref">SCION and Segment Routing</a></p>
+                    <p id="section-toc.1-1.2.2.4.2.1.1"><a href="#section-2.4.1" class="xref">2.4.1</a>.  <a href="#name-scion-and-rpki" class="xref">SCION and RPKI</a></p>
 </li>
                   <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.4.2.2">
-                    <p id="section-toc.1-1.2.2.4.2.2.1"><a href="#section-2.4.2" class="xref">2.4.2</a>.  <a href="#name-scion-and-rpki" class="xref">SCION and RPKI</a></p>
+                    <p id="section-toc.1-1.2.2.4.2.2.1"><a href="#section-2.4.2" class="xref">2.4.2</a>.  <a href="#name-scion-and-segment-routing" class="xref">SCION and Segment Routing</a></p>
 </li>
                   <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.4.2.3">
-                    <p id="section-toc.1-1.2.2.4.2.3.1"><a href="#section-2.4.3" class="xref">2.4.3</a>.  <a href="#name-scion-and-previous-attempts" class="xref">SCION and previous attempts (RFC9049)</a></p>
+                    <p id="section-toc.1-1.2.2.4.2.3.1"><a href="#section-2.4.3" class="xref">2.4.3</a>.  <a href="#name-scion-and-other-routing-app" class="xref">SCION and other routing approaches</a></p>
+</li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.4.2.4">
+                    <p id="section-toc.1-1.2.2.4.2.4.1"><a href="#section-2.4.4" class="xref">2.4.4</a>.  <a href="#name-scion-and-previous-attempts" class="xref">SCION and previous attempts (RFC9049)</a></p>
 </li>
                 </ul>
 </li>
@@ -1299,7 +1302,9 @@ This design decision  has two outcomes: first of all SCION can reuse existing ho
 </li>
             <li class="normal" id="section-2.1.1-2.2">
               <em>Multipath.</em> SCION ASes can select PCBs according to their policies, and register the corresponding path segments, making them available to other ASes and end hosts. SCION hosts can leverage a wide range of inter-domain paths, selecting them at each hop based on application requirements or path conditions.
-One existing mechanism is BGP mutlipath <span>[<a href="#RFC7911" class="xref">RFC7911</a>]</span>, that focuses on advertising multiple paths for the same prefix. However, it does not allow end hosts to select the whole end to end path, therefore traffic cannot be routed based on application requirements. Second it faces scalability concerns typical of BGP, as discussed in the above mentioned RFC.
+One existing mechanism is BGP mutlipath <span>[<a href="#RFC7911" class="xref">RFC7911</a>]</span>, that focuses on advertising multiple paths for the same prefix. However, it does not allow end hosts to select the whole end to end path, therefore traffic cannot be routed based on application requirements.
+In addition, it faces scalability concerns typical of BGP (i.e., increased resource requirement on routers), as discussed in the above mentioned RFC.
+Similarly to BGP multipath, other approaches based on BGP, either are only bale to provide backup paths  that can only be activated in case of failure (i.e., Diverse BGP Paths <span>[<a href="#RFC6774" class="xref">RFC6774</a>]</span>),either they face scalability limitations.
 Such concerns motivate an alternative approach as SCION.<a href="#section-2.1.1-2.2" class="pilcrow">¶</a>
 </li>
             <li class="normal" id="section-2.1.1-2.3">
@@ -1443,41 +1448,56 @@ Trust within an ISD is normally bootstrapped with an initial ceremony. Subsequen
         </h3>
 <p id="section-2.4-1">A question that is often asked is wether SCION could simply reuse or extend existing protocols.
 We try to clarify this question, giving an overview of the relationships between SCION and other approaches.
-For protocols that are deployed in the wild, we discuss what properties can be achieved and what propertyes can only be achieved with an approach like SCION.<a href="#section-2.4-1" class="pilcrow">¶</a></p>
-<div id="scion-and-segment-routing">
+For protocols that are deployed in the wild, we discuss what properties can be achieved and what properties can only be achieved with an approach like SCION.<a href="#section-2.4-1" class="pilcrow">¶</a></p>
+<div id="scion-and-rpki">
 <section id="section-2.4.1">
-          <h4 id="name-scion-and-segment-routing">
-<a href="#section-2.4.1" class="section-number selfRef">2.4.1. </a><a href="#name-scion-and-segment-routing" class="section-name selfRef">SCION and Segment Routing</a>
+          <h4 id="name-scion-and-rpki">
+<a href="#section-2.4.1" class="section-number selfRef">2.4.1. </a><a href="#name-scion-and-rpki" class="section-name selfRef">SCION and RPKI</a>
           </h4>
-<p id="section-2.4.1-1">Given its path-aware properties, some of SCION's characteristics might seem similar to the ones provided by Segment Routing (SR) <span>[<a href="#RFC8402" class="xref">RFC8402</a>]</span>. There are, however, fundamental differences that distinguish and motivate SCION.
-The most salient one is that Segment Routing is designed to be deployed across a single trusted domain. SR therefore does not focus on security, which remains an open question. SCION, instead, is designed from inception to allow inter-domain communication between mutually distrustful entities.
-It comes, therefore, with an arsenal of tools to prevent attacks (i.e., authenticating all control plane messages and all critical fields in the data-plane header).
-Rather than competing, SCION and SR could potentially complement each other. SCION relies on existing intra-domain routing protocols, therefore SR could represent one of the possible intra-domain routing protocols. Possible integration of their path-aware properties remain for now an open question.<a href="#section-2.4.1-1" class="pilcrow">¶</a></p>
-<p id="section-2.4.1-2">TODO: Maybe cite https://datatracker.ietf.org/doc/draft-li-spring-srv6-security-consideration/
-TODO: maybe this paragraph can go at the end, in a paragraph where we discuss SICON vs related work (inclding BGP with colors, semantic routing, ...)<a href="#section-2.4.1-2" class="pilcrow">¶</a></p>
+<p id="section-2.4.1-1">One might ask why SCION could not just rely on RPKI. Summarising the points discussed in this document, the CP-PKI distinguishes itself because of the trust model, which comprises independent trust roots that are a fundamental building block for SCION's Isolation Domains.
+RPKI's trust model follows the same structure as the IP allocation hierarchy, where the five RIRs run a CA.
+This  clashes with the trust model required for SCION's Isolation Domains, therefore the SCION control plane would not be able to leverage RPKI instead of the CP-PKI.
+In addition, RPKI is only meant to provide authorisation, but not authentication.
+SCION indeed does not provide, by design, IP authorisation. Rather, as we further describe in the next section, one of  IP to SCION's  coexistence mechanisms (SIAM) relies on RPKI for IP origin attestation.<a href="#section-2.4.1-1" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="scion-and-rpki">
+<div id="scion-and-segment-routing">
 <section id="section-2.4.2">
-          <h4 id="name-scion-and-rpki">
-<a href="#section-2.4.2" class="section-number selfRef">2.4.2. </a><a href="#name-scion-and-rpki" class="section-name selfRef">SCION and RPKI</a>
+          <h4 id="name-scion-and-segment-routing">
+<a href="#section-2.4.2" class="section-number selfRef">2.4.2. </a><a href="#name-scion-and-segment-routing" class="section-name selfRef">SCION and Segment Routing</a>
           </h4>
-<p id="section-2.4.2-1">One might ask why SCION could not just rely on RPKI. Summarising on the points above, the CP-PKI distinguishes itself because of the trust model, which comprises independent trust roots that are a fundamental building block for SCION's Isolation Domains.
-RPKI's trust model follows the same structure as the IP allocation hierarchy, where the five RIRs run a CA. This  clashes with the trust model required for SCION's Isolation Domains.
-In addition, RPKI is only meant to provide authorisation, but not authentication.
-SCION indeed does not provide, by design, IP authorisation. Rather, as we further describe in the next section, one of  IP to SCION's  coexistence mechanisms (SIAM) relies on RPKI for IP origin attestation.<a href="#section-2.4.2-1" class="pilcrow">¶</a></p>
+<p id="section-2.4.2-1">Given its path-aware properties, some of SCION's characteristics might seem similar to the ones provided by Segment Routing (SR) <span>[<a href="#RFC8402" class="xref">RFC8402</a>]</span>.
+There are, however, fundamental differences that distinguish and motivate SCION.
+The most salient one is that Segment Routing is designed to be deployed across a single trusted domain.
+SR therefore does not focus on security, which remains an open question, as outlined in <span>[<a href="#I-D.spring-srv6-security-consideration" class="xref">I-D.spring-srv6-security-consideration</a>]</span>.
+SCION, instead, is designed from inception to allow inter-domain communication between mutually distrustful entities.
+It comes, therefore, with built-in security measures to prevent attacks (i.e., authenticating all control plane messages and all critical fields in the data-plane header).
+Rather than competing, SCION and SR could potentially complement each other.
+SCION relies on existing intra-domain routing protocols, therefore SR can be one of the possible intra-domain routing protocols.
+A possible integration of their path-aware properties remain for now an open question.<a href="#section-2.4.2-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="scion-and-other-routing-approaches">
+<section id="section-2.4.3">
+          <h4 id="name-scion-and-other-routing-app">
+<a href="#section-2.4.3" class="section-number selfRef">2.4.3. </a><a href="#name-scion-and-other-routing-app" class="section-name selfRef">SCION and other routing approaches</a>
+          </h4>
+<p id="section-2.4.3-1">TODO:  (inclding BGP with colors, semantic routing, ...)<a href="#section-2.4.3-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="scion-and-previous-attempts-rfc9049">
-<section id="section-2.4.3">
+<section id="section-2.4.4">
           <h4 id="name-scion-and-previous-attempts">
-<a href="#section-2.4.3" class="section-number selfRef">2.4.3. </a><a href="#name-scion-and-previous-attempts" class="section-name selfRef">SCION and previous attempts (RFC9049)</a>
+<a href="#section-2.4.4" class="section-number selfRef">2.4.4. </a><a href="#name-scion-and-previous-attempts" class="section-name selfRef">SCION and previous attempts (RFC9049)</a>
           </h4>
-<p id="section-2.4.3-1">How does SCION differ from previous failed attempts to deploy path-aware networking? Why?
-- <em>Bananas</em>:
-- ...<a href="#section-2.4.3-1" class="pilcrow">¶</a></p>
-<p id="section-2.4.3-2">TODO: look at p. 582 of the Book
-Sometimes SCION can build on top of the existing (i.e., RPKI), sometimes we believe a different approach is needed (i.e. Segment Routing)...<a href="#section-2.4.3-2" class="pilcrow">¶</a></p>
+<p id="section-2.4.4-1">RFC9049 <span>[<a href="#RFC9049" class="xref">RFC9049</a>]</span> describes previous failed attempts in deploying path-aware networking.
+How does SCION differ from previous failed attempts to deploy path-aware networking? Why?<a href="#section-2.4.4-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-2.4.4-2.1">...<a href="#section-2.4.4-2.1" class="pilcrow">¶</a>
+</li>
+          </ul>
+<p id="section-2.4.4-3">TODO: look at p. 582 of the Book
+Sometimes SCION can build on top of the existing (i.e., RPKI), sometimes we believe a different approach is needed (i.e. Segment Routing)...<a href="#section-2.4.4-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -1615,6 +1635,10 @@ Also mention that the most important core components are formally verified.<a hr
       <dd>
 <span class="refAuthor">Dunbar, L.</span>, <span class="refAuthor">Malis, A.</span>, <span class="refAuthor">Jacquenet, C.</span>, <span class="refAuthor">Toy, M.</span>, and <span class="refAuthor">K. Majumdar</span>, <span class="refTitle">"SCION Overview"</span>, <time datetime="2022" class="refDate">2022</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/draft-ietf-rtgwg-net2cloud-problem-statement/">https://datatracker.ietf.org/doc/draft-ietf-rtgwg-net2cloud-problem-statement/</a>&gt;</span>. </dd>
 <dd class="break"></dd>
+<dt id="I-D.spring-srv6-security-consideration">[I-D.spring-srv6-security-consideration]</dt>
+      <dd>
+<span class="refAuthor">Li, C.</span>, <span class="refAuthor">Li, Z.</span>, <span class="refAuthor">Xie, C.</span>, <span class="refAuthor">Tian, H.</span>, and <span class="refAuthor">J. Mao</span>, <span class="refTitle">"Security Considerations for SRv6 Networks"</span>, <time datetime="2022" class="refDate">2022</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/draft-li-spring-srv6-security-consideration/">https://datatracker.ietf.org/doc/draft-li-spring-srv6-security-consideration/</a>&gt;</span>. </dd>
+<dd class="break"></dd>
 <dt id="KATZ2012">[KATZ2012]</dt>
       <dd>
 <span class="refAuthor">Katz-Bassett, E.</span>, <span class="refAuthor">Scott, C.</span>, <span class="refAuthor">Choffnes, D.</span>, <span class="refAuthor">Cunha, Í.</span>, <span class="refAuthor">Valancius, V.</span>, <span class="refAuthor">Feamster, N.</span>, <span class="refAuthor">Madhyastha, H.</span>, <span class="refAuthor">Anderson, T.</span>, and <span class="refAuthor">A. Krishnamurthy</span>, <span class="refTitle">"LIFEGUARD: practical repair of persistent route failures"</span>, <span class="seriesInfo">ACM SIGCOMM Computer Communication Review Vol. 42, pp. 395-406</span>, <span class="seriesInfo">DOI 10.1145/2377677.2377756</span>, <time datetime="2012-09" class="refDate">September 2012</time>, <span>&lt;<a href="https://doi.org/10.1145/2377677.2377756">https://doi.org/10.1145/2377677.2377756</a>&gt;</span>. </dd>
@@ -1690,6 +1714,10 @@ Also mention that the most important core components are formally verified.<a hr
 <dt id="RFC6480">[RFC6480]</dt>
       <dd>
 <span class="refAuthor">Lepinski, M.</span> and <span class="refAuthor">S. Kent</span>, <span class="refTitle">"An Infrastructure to Support Secure Internet Routing"</span>, <span class="seriesInfo">RFC 6480</span>, <span class="seriesInfo">DOI 10.17487/RFC6480</span>, <time datetime="2012-02" class="refDate">February 2012</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc6480">https://www.rfc-editor.org/rfc/rfc6480</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC6774">[RFC6774]</dt>
+      <dd>
+<span class="refAuthor">Raszuk, R., Ed.</span>, <span class="refAuthor">Fernando, R.</span>, <span class="refAuthor">Patel, K.</span>, <span class="refAuthor">McPherson, D.</span>, and <span class="refAuthor">K. Kumaki</span>, <span class="refTitle">"Distribution of Diverse BGP Paths"</span>, <span class="seriesInfo">RFC 6774</span>, <span class="seriesInfo">DOI 10.17487/RFC6774</span>, <time datetime="2012-11" class="refDate">November 2012</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc6774">https://www.rfc-editor.org/rfc/rfc6774</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC6830">[RFC6830]</dt>
       <dd>
