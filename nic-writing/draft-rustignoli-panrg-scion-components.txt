@@ -81,17 +81,17 @@ Table of Contents
      2.2.  Forwarding - Data plane
        2.2.1.  Key properties in relationship to existing protocols
      2.3.  Authentication - SCION PKI
-     2.4.  Related work
-       2.4.1.  SCION and RPKI
-       2.4.2.  SCION and Segment Routing
-       2.4.3.  SCION and other routing approaches
-       2.4.4.  SCION and previous attempts with path-aware routing
-   3.  Transition mechanisms
-   4.  Additional components
-   5.  Dependency analysis
-   6.  Conclusions
-   7.  IANA Considerations
-   8.  Informative References
+   3.  Additional components
+     3.1.  Transition mechanisms
+     3.2.  Related work
+       3.2.1.  SCION and RPKI
+       3.2.2.  SCION and Segment Routing
+       3.2.3.  SCION and other routing approaches
+       3.2.4.  SCION and previous attempts with path-aware routing
+   4.  Dependency analysis
+   5.  Conclusions
+   6.  IANA Considerations
+   7.  Informative References
    Acknowledgments
    Authors' Addresses
 
@@ -513,7 +513,62 @@ Table of Contents
    bootstrapped with an initial ceremony.  Subsequent updates to the
    root of trust are handled automatically.
 
-2.4.  Related work
+3.  Additional components
+
+3.1.  Transition mechanisms
+
+   As we presented in [I-D.dekater-scion-overview], SCION comprises
+   multiple transition mechanisms that allow an incremental deployment
+   and coexistence with existing protocols.  Such approaches require
+   different level of changes in existing systems, and have different
+   maturity levels (from research to production).  Rather than
+   describing how each mechanism works, we provide a short summary of
+   the approach, focusing on what its functions, properties, and
+   protocols it reuses, extend or interact with.
+
+   *  _SCION-IP-Gateway (SIG)_.  A SCION-IP-Gateway (SIG) encapsulates
+      regular IP packets into SCION packets with a corresponding SIG at
+      the destination that performs the decapsulation.  This mechanism
+      enables legacy IP end hosts to benefit from a SCION deployment by
+      transparently obtaining improved security and availability
+      properties.  SCION routing policies can be configured on SIGs, in
+      order to select appropriate SCION paths based on application
+      requirements.  SIGs have the ability to dynamically exchange
+      prefix information, currently using their own encapsulation and
+      prefix exchange protocol.  This does not exclude reusing existing
+      protocols in the future.  SIGs are deployed in production SCION
+      networks, and there are commercial implementations.
+
+   *  _SIAM_. To make SIGs a viable transition mechanism in an Internet-
+      scale network with tens of thousands of ASes, an automatic
+      configuration system is required.  SIAM creates mappings between
+      legacy IPs and SCION addresses, relying on the authorisations in
+      the Resource Public Key Infrastructure (RPKI).  SIAM is currently
+      a research prototype, further described in [SUPRAJA2021].
+
+   *  _SBAS_ is an experimental architecture aiming at extending
+      benefits of SCION (in terms of performance and routing security)
+      to potentially any IP host on the Internet.  SBAS consists of a
+      federated backbone of entities.  SBAS appears on the outside
+      Internet as a regular BGP-speaking AS.  Customers of SBAS can
+      leverage the system to route traffic across the SCION network
+      according to their requirements (i.e., latency, geography, ... ).
+      SBAS contains globally distributed PoPs that advertise its
+      customer's announcements.  Traffic is therefore routed as close as
+      possible to the source onto the SCION network.  The system is
+      further described in chapter 13 of [CHUAT22].
+
+   TODO: Maybe instead of having bullet points, we can just have a
+   paragraph.  This way we don't give too much importance about this
+   section. - _End-host stack_. SCION can be deployed though the use of
+   SICON-to-IP conversion or natively on end hosts. - Happy eyeballs
+   (and how we extend it) - DrKey & dependencies -->
+   [I-D.garciapardo-drkey] - LightningFilter -->
+   https://datatracker.ietf.org/meeting/111/materials/slides-111-panrg-
+   lightning-filter-high-speed-traffic-filtering-based-on-drkey - SCMP -
+   COLIBRI (Bandwidth Reservations) - _RHINE_ (formerly RAINS)
+
+3.2.  Related work
 
    A question that is often asked is wether SCION could simply reuse or
    extend existing protocols.  We try to clarify this question, giving
@@ -522,7 +577,7 @@ Table of Contents
    properties can be achieved and what properties can only be achieved
    with an approach like SCION.
 
-2.4.1.  SCION and RPKI
+3.2.1.  SCION and RPKI
 
    One might ask why SCION could not just rely on RPKI.  Summarising the
    points discussed in this document, the CP-PKI distinguishes itself
@@ -538,7 +593,7 @@ Table of Contents
    one of IP to SCION's coexistence mechanisms (SIAM) relies on RPKI for
    IP origin attestation.
 
-2.4.2.  SCION and Segment Routing
+3.2.2.  SCION and Segment Routing
 
    Given its path-aware properties, some of SCION's characteristics
    might seem similar to the ones provided by Segment Routing (SR)
@@ -557,11 +612,11 @@ Table of Contents
    intra-domain routing protocols.  A possible integration of their
    path-aware properties remain for now an open question.
 
-2.4.3.  SCION and other routing approaches
+3.2.3.  SCION and other routing approaches
 
    TODO: (inclding BGP with colors, semantic routing, ...)
 
-2.4.4.  SCION and previous attempts with path-aware routing
+3.2.4.  SCION and previous attempts with path-aware routing
 
    RFC9049 [RFC9049] illustrates obstacles and lessons learned in
    previous attempts.  SCION differs from previous attempts to deploy
@@ -609,65 +664,7 @@ Table of Contents
    of the other protocol's pitfalls, and can therefore be deployed and
    standardised.
 
-3.  Transition mechanisms
-
-   As we presented in [I-D.dekater-scion-overview], SCION comprises
-   multiple transition mechanisms that allow an incremental deployment
-   and coexistence with existing protocols.  Such approaches require
-   different level of changes in existing systems, and have different
-   maturity levels (from research to production).  Rather than
-   describing how each mechanism works, we provide a short summary of
-   the approach, focusing on what its functions, properties, and
-   protocols it reuses, extend or interact with.
-
-   *  _SCION-IP-Gateway (SIG)_.  A SCION-IP-Gateway (SIG) encapsulates
-      regular IP packets into SCION packets with a corresponding SIG at
-      the destination that performs the decapsulation.  This mechanism
-      enables legacy IP end hosts to benefit from a SCION deployment by
-      transparently obtaining improved security and availability
-      properties.  SCION routing policies can be configured on SIGs, in
-      order to select appropriate SCION paths based on application
-      requirements.  SIGs have the ability to dynamically exchange
-      prefix information, currently using their own encapsulation and
-      prefix exchange protocol.  This does not exclude reusing existing
-      protocols in the future.  SIGs are deployed in production SCION
-      networks, and there are commercial implementations.
-
-   *  _SIAM_. To make SIGs a viable transition mechanism in an Internet-
-      scale network with tens of thousands of ASes, an automatic
-      configuration system is required.  SIAM creates mappings between
-      legacy IPs and SCION addresses, relying on the authorisations in
-      the Resource Public Key Infrastructure (RPKI).  SIAM is currently
-      a research prototype, further described in [SUPRAJA2021].
-
-   *  _SBAS_ is an experimental architecture aiming at extending
-      benefits of SCION (in terms of performance and routing security)
-      to potentially any IP host on the Internet.  SBAS consists of a
-      federated backbone of entities.  SBAS appears on the outside
-      Internet as a regular BGP-speaking AS.  Customers of SBAS can
-      leverage the system to route traffic across the SCION network
-      according to their requirements (i.e., latency, geography, ... ).
-      SBAS contains globally distributed PoPs that advertise its
-      customer's announcements.  Traffic is therefore routed as close as
-      possible to the source onto the SCION network.  The system is
-      further described in chapter 13 of [CHUAT22].  TODO: I find it
-      very difficult to explain SBAS in a few lines... It is quite a big
-      system and I'm not so sure we should talk about it.  I'm afraid it
-      might distract the focus.
-
-4.  Additional components
-
-   TODO: Mayne instead of having bullet points, we can just have a
-   paragraph.  This way we don't give too much importance about this
-   section. - _End-host stack_. SCION can be deployed though the use of
-   SICON-to-IP conversion or natively on end hosts. - Happy eyeballs
-   (and how we extend it) - DrKey & dependencies -->
-   [I-D.garciapardo-drkey] - LightningFilter -->
-   https://datatracker.ietf.org/meeting/111/materials/slides-111-panrg-
-   lightning-filter-high-speed-traffic-filtering-based-on-drkey - SCMP -
-   COLIBRI (Bandwidth Reservations) - _RHINE_ (formerly RAINS)
-
-5.  Dependency analysis
+4.  Dependency analysis
 
    This section briefly discusses dependencies between SCION's core
    components, with the goal of facilitating a discussion on
@@ -702,18 +699,18 @@ Table of Contents
 
    *  Only other components (i.e., SCMP) TODO
 
-6.  Conclusions
+5.  Conclusions
 
    We described key SCION components with their properties and
    dependencies.  TODO: I would add some comments on how SCION avoids
    some of the issues mentioned in [RFC9049] Also mention that the most
    important core components are formally verified.
 
-7.  IANA Considerations
+6.  IANA Considerations
 
    This document has no IANA actions.
 
-8.  Informative References
+7.  Informative References
 
    [ANDERSEN2001]
               Andersen, D., Balakrishnan, H., Kaashoek, F., and R.
