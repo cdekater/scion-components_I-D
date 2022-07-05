@@ -1180,7 +1180,7 @@ We also describe the motivations behind cases where a greenfield approach is nee
                     <p id="section-toc.1-1.2.2.4.2.3.1"><a href="#section-2.4.3" class="xref">2.4.3</a>.  <a href="#name-scion-and-other-routing-app" class="xref">SCION and other routing approaches</a></p>
 </li>
                   <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.4.2.4">
-                    <p id="section-toc.1-1.2.2.4.2.4.1"><a href="#section-2.4.4" class="xref">2.4.4</a>.  <a href="#name-scion-and-previous-attempts" class="xref">SCION and previous attempts (RFC9049)</a></p>
+                    <p id="section-toc.1-1.2.2.4.2.4.1"><a href="#section-2.4.4" class="xref">2.4.4</a>.  <a href="#name-scion-and-previous-attempts" class="xref">SCION and previous attempts with path-aware routing</a></p>
 </li>
                 </ul>
 </li>
@@ -1485,19 +1485,39 @@ A possible integration of their path-aware properties remain for now an open que
 <p id="section-2.4.3-1">TODO:  (inclding BGP with colors, semantic routing, ...)<a href="#section-2.4.3-1" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="scion-and-previous-attempts-rfc9049">
+<div id="scion-and-previous-attempts-with-path-aware-routing">
 <section id="section-2.4.4">
           <h4 id="name-scion-and-previous-attempts">
-<a href="#section-2.4.4" class="section-number selfRef">2.4.4. </a><a href="#name-scion-and-previous-attempts" class="section-name selfRef">SCION and previous attempts (RFC9049)</a>
+<a href="#section-2.4.4" class="section-number selfRef">2.4.4. </a><a href="#name-scion-and-previous-attempts" class="section-name selfRef">SCION and previous attempts with path-aware routing</a>
           </h4>
-<p id="section-2.4.4-1">RFC9049 <span>[<a href="#RFC9049" class="xref">RFC9049</a>]</span> describes previous failed attempts in deploying path-aware networking.
-How does SCION differ from previous failed attempts to deploy path-aware networking? Why?<a href="#section-2.4.4-1" class="pilcrow">¶</a></p>
+<p id="section-2.4.4-1">RFC9049 <span>[<a href="#RFC9049" class="xref">RFC9049</a>]</span> illustrates obstacles and lessons learned in previous attempts.
+SCION differs from previous attempts to deploy path-aware networking.
+We therefore discuss how SCION relates to some of these lessons, and how it differs from previous attempts.<a href="#section-2.4.4-1" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-2.4.4-2.1">...<a href="#section-2.4.4-2.1" class="pilcrow">¶</a>
+<li class="normal" id="section-2.4.4-2.1">
+              <em>Justifying deployment</em>:
+As early adopters show, SCION can be deployed in existing networks and provide benefits for ISPs without high impact changes. In addition, it provides properties that are not achievable with existing protocols and are needed on a future Internet.
+The reader should keep in mind that justifying why such properties are needed is outside of the scope of this document, and might be a topic for a dedicated gap analysis.<a href="#section-2.4.4-2.1" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.4.4-2.2">
+              <em>Benefits for early adopters and partial deployments</em>
+--&gt; Early adopters (like in the SSFN) can benefit from SICON properties, especially in industries with higher availability requirements.
+With SIG and compatibility mechanisms, endpoints upgrades are not needed. even non-native SCION end hosts can benefit from its properties.
+SCION needs to be deployed continuously between ASes in the SCION part. However, SICON only requires inter-domain hops along the path to be upgraded. This makes it a bit easier to deploy.<a href="#section-2.4.4-2.2" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.4.4-2.3">
+              <em>Relationship to end-to-end protocols</em>: In SCION it is end-hosts who select inter-domain paths, as routers simply verify path autorization and forward packets.
+SCION path selection is therefore performed at endpoints, and end-hosts can leverage existing end-to-end protocol mechanisms to switch paths, rather than compete with them.<a href="#section-2.4.4-2.3" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.4.4-2.4">
+              <em>Paying for path-awareness</em> Experiences with early adopter ISPs in Europe show that ISPs are able to sell SCION as premium business connectivity. As an example, ISPs Swisscom, Sunrise and Switch all provide a SCION business offering.<a href="#section-2.4.4-2.4" class="pilcrow">¶</a>
+</li>
+            <li class="normal" id="section-2.4.4-2.5">
+              <em>Keeping per-connection state &amp; keeping traffic in the fast-path</em>: SCION is doing it<a href="#section-2.4.4-2.5" class="pilcrow">¶</a>
 </li>
           </ul>
-<p id="section-2.4.4-3">TODO: look at p. 582 of the Book
-Sometimes SCION can build on top of the existing (i.e., RPKI), sometimes we believe a different approach is needed (i.e. Segment Routing)...<a href="#section-2.4.4-3" class="pilcrow">¶</a></p>
+<p id="section-2.4.4-3">TODO: look at p. 582 of the Book<a href="#section-2.4.4-3" class="pilcrow">¶</a></p>
+<p id="section-2.4.4-4">We briefly discuss implications of <span>[<a href="#RFC5218" class="xref">RFC5218</a>]</span> (What Makes for a Successful Protocol?) in <span>[<a href="#I-D.dekater-scion-overview" class="xref">I-D.dekater-scion-overview</a>]</span>. Overall, because of the reasons discussed above, we believe SCION avoid many of the other protocol's pitfalls, and can therefore be deployed and standardised.<a href="#section-2.4.4-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
