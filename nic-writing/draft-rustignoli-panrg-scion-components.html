@@ -7,7 +7,6 @@
 <title>SCION Components Analysis</title>
 <meta content="Nicola Rustignoli" name="author">
 <meta content="Corine de Kater" name="author">
-<meta content="Adrian Perrig" name="author">
 <meta content="
        SCION is a future Internet architecture that focuses on security and availability. Its fundamental functions are carried out by a number of components. 
        This document illustrates the dependencies between its core components and extensions. We also discuss the relationship between SCION and existing protocols, with focus on illustrating which existing protocols are reused/extended.
@@ -1033,7 +1032,7 @@ svg :is([stroke="fill"], [fill^="#fff"]) {
 <td class="right">July 2022</td>
 </tr></thead>
 <tfoot><tr>
-<td class="left">Rustignoli, et al.</td>
+<td class="left">Rustignoli &amp; de Kater</td>
 <td class="center">Expires 6 January 2023</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
@@ -1061,10 +1060,6 @@ svg :is([stroke="fill"], [fill^="#fff"]) {
 </div>
 <div class="author">
       <div class="author-name">C. de Kater</div>
-<div class="org">ETH Zuerich</div>
-</div>
-<div class="author">
-      <div class="author-name">A. Perrig</div>
 <div class="org">ETH Zuerich</div>
 </div>
 </dd>
@@ -1201,16 +1196,13 @@ We also describe the motivations behind cases where a greenfield approach is nee
             <p id="section-toc.1-1.5.1"><a href="#section-5" class="xref">5</a>.  <a href="#name-conclusions" class="xref">Conclusions</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6">
-            <p id="section-toc.1-1.6.1"><a href="#section-6" class="xref">6</a>.  <a href="#name-iana-considerations" class="xref">IANA Considerations</a></p>
+            <p id="section-toc.1-1.6.1"><a href="#section-6" class="xref">6</a>.  <a href="#name-informative-references" class="xref">Informative References</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7">
-            <p id="section-toc.1-1.7.1"><a href="#section-7" class="xref">7</a>.  <a href="#name-informative-references" class="xref">Informative References</a></p>
+            <p id="section-toc.1-1.7.1"><a href="#appendix-A" class="xref"></a><a href="#name-acknowledgments" class="xref">Acknowledgments</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8">
-            <p id="section-toc.1-1.8.1"><a href="#appendix-A" class="xref"></a><a href="#name-acknowledgments" class="xref">Acknowledgments</a></p>
-</li>
-          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9">
-            <p id="section-toc.1-1.9.1"><a href="#appendix-B" class="xref"></a><a href="#name-authors-addresses" class="xref">Authors' Addresses</a></p>
+            <p id="section-toc.1-1.8.1"><a href="#appendix-B" class="xref"></a><a href="#name-authors-addresses" class="xref">Authors' Addresses</a></p>
 </li>
         </ul>
 </nav>
@@ -1225,9 +1217,7 @@ We also describe the motivations behind cases where a greenfield approach is nee
 The architecture is composed of a system of related components, some of which are  essential to set up end to end SCION connectivity, while others are add-ons aiming at providing additional functionality, security, or backwards compatibility. Discussions at <span>[<a href="#PANRG-INTERIM-Min" class="xref">PANRG-INTERIM-Min</a>]</span> showed the need to describe the relationships between SCION's core components.
 In this document we therefore focus on each component, describing its functionality, dependencies and relationships to existing protocols. The goal is not to describe each component specification, rather to provide a basis for discussions about the engineering decisions that made SCION what it is.
 We first start from core components, that form a SCION minimal stack. We then move onto extensions and additional components.<a href="#section-1-1" class="pilcrow">¶</a></p>
-<p id="section-1-2">TODO: Feedback Corine.. in the introduction, reiterate why the properties that SCION offers are actually needed and relevant.. Adrian wanted to actually achieve them. For each property, we can first stress how the current Internet fulfils these properties, and then stress why SCION achieves them better. We can do this for the 3 core components.
-So overall, for each property, first explain why they are important, why they cannot be achieved, and why SCION's approach achieves them.<a href="#section-1-2" class="pilcrow">¶</a></p>
-<p id="section-1-3">Before reading this document, please refer to <span>[<a href="#I-D.dekater-scion-overview" class="xref">I-D.dekater-scion-overview</a>]</span> for a generic overview of SCION and its components, the problems it solves, and existing deployments. For an in-depth description of SCION, please refer to <span>[<a href="#CHUAT22" class="xref">CHUAT22</a>]</span>.<a href="#section-1-3" class="pilcrow">¶</a></p>
+<p id="section-1-2">Before reading this document, please refer to <span>[<a href="#I-D.dekater-scion-overview" class="xref">I-D.dekater-scion-overview</a>]</span> for a generic overview of SCION and its components, the problems it solves, and existing deployments. For an in-depth description of SCION, please refer to <span>[<a href="#CHUAT22" class="xref">CHUAT22</a>]</span>.<a href="#section-1-2" class="pilcrow">¶</a></p>
 <div id="design-goals">
 <section id="section-1.1">
         <h3 id="name-design-goals">
@@ -1246,8 +1236,7 @@ The relevance of Internet's routing security issues is testified by the fact tha
 SCION strongly focuses on preventing routing attacks, hijackings, DoS, providing stronger guarantees than the existing Internet.
 Security is tightly related to trust. SCION therefore offers offering end-hosts transparency and control over forwarding paths.
 In addition, SCION's design starts from the assumption that any two entities on the global Internet do not mutually trust each other.
-SCION therefore enables trust agility, allowing its users to decide the roots of trust they wish to rely upon.
-TODO: overview of why SCION is secure<a href="#section-1.1-2.2" class="pilcrow">¶</a>
+SCION therefore enables trust agility, allowing its users to decide the roots of trust they wish to rely upon.<a href="#section-1.1-2.2" class="pilcrow">¶</a>
 </li>
           <li class="normal" id="section-1.1-2.3">
             <em>Scalability</em>.  Security and high availability should not result in compromises on scalability.
@@ -1340,14 +1329,16 @@ TODO: I would be a bit more precise: what kind of fault would be contained? A pa
             <li class="normal" id="section-2.1.1-2.8">
               <em>Authenticated control messages.</em> BGP has no built-in security mechanisms and does not provide any tools for ASes to authenticate the information they receive through BGP update messages. This opens up a multitude of attack opportunities. SCION control-plane messages, instead, are all authenticated.
 In addition, currently the Internet Control Message Protocol (ICMP) lacks an authenticated counterpart, see <span>[<a href="#RFC4443" class="xref">RFC4443</a>]</span> and <span>[<a href="#RFC0791" class="xref">RFC0791</a>]</span>. Unauthenticated ICMP messages can potentially be used to affect or even prevent traffic forwarding.
-SCION provides the SCION Control Message Protocol (SCMP), which  is analogous to ICMP. It provides functionality for network diagnostics, such as ping and traceroute, and error messages that signal packet processing or network-layer problems. SCMP is the first control message protocol supports the authentication of network control messages.
-TODO: I'm not sure how much I want to go into SCMP here.. Especially as SCMP packets are only authenticated if DRKey/SPAO are used<a href="#section-2.1.1-2.8" class="pilcrow">¶</a>
+SCION provides the SCION Control Message Protocol (SCMP), which  is analogous to ICMP. It provides functionality for network diagnostics, such as ping and traceroute, and error messages that signal packet processing or network-layer problems. SCMP is the first control message protocol supports the authentication of network control messages.<a href="#section-2.1.1-2.8" class="pilcrow">¶</a>
 </li>
           </ul>
 <p id="section-2.1.1-3">Overall, several of the control plane properties and key mechanisms depend on the fact that SCION ASes are grouped into ISolation Domains.
 For example, ISDs are fundamental to achieve transparency, routing scalability, fault isolation and fast propagation of routing information.
-The control plane therefore is built around the concept of ISDs, therefore it relies on the SCION control-plane PKI (#pki) for authenticating control information.<a href="#section-2.1.1-3" class="pilcrow">¶</a></p>
-<p id="section-2.1.1-4">TODO: add a few sentences on why the CP avoids mistakes in lessons learned from RFC9049<a href="#section-2.1.1-4" class="pilcrow">¶</a></p>
+The control plane therefore is built around the concept of ISDs, therefore it relies on the SCION control-plane PKI <a href="#pki" class="xref">Section 2.3</a> for authenticating control information.<a href="#section-2.1.1-3" class="pilcrow">¶</a></p>
+<p id="section-2.1.1-4">The SCION control plane design takes into account some of the lessons learned discussed in <span>[<a href="#RFC9049" class="xref">RFC9049</a>]</span>:
+- It does not try to outperform end-to-end mechanism, as path selection is performed by end-hosts. SCION, therefore, can leverage existing end-to-end mechanisms to switch paths, rather than competing with them.
+- There is no component in the architecture that needs to keep connection state, as this is  pushed to end-hosts.
+TODO: double check if this RFC9049 part fits well here<a href="#section-2.1.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -1370,31 +1361,30 @@ In early deployments, intra-AS SCION packets are sometimes encapsulated into an 
 <p id="section-2.2.1-1">Thanks to its data plane, SCION achieves properties that are difficult to achieve when exclusively extending existing protocols.<a href="#section-2.2.1-1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-2.2.1-2.1">
-              <em>Programmable paths.</em> SCION end hosts select network paths based on application requirements, rather than routers.
-This approach is such that there is no need to include semantics in packets, as routing decisions are left to end hosts. In addition, when comparing to proposed semantic routing (TODO: reference) approaches, with SCION  hosts gain better visibility into network paths.
-TODO: I'm not sure if we want to explicitly say that this approach has advantages to semantic routing.. Maybe we don't want to mention it?
-https://www.ietf.org/id/draft-farrel-irtf-introduction-to-semantic-routing-04.html#I-D.king-irtf-semantic-routing-survey
-TODO: @Adrian, I remember you don't like the expression "programmable paths".. Anything better? "Path selection"?
-TODO @Nicola: describe tradeoffs between properties if we were to reuse existing protocols<a href="#section-2.2.1-2.1" class="pilcrow">¶</a>
+              <em>Programmable paths.</em> In SCION, end hosts select network paths based on application requirements, rather than routers.
+This approach is such that there is no need to include semantics in packets, as routing decisions are left to end hosts.<a href="#section-2.2.1-2.1" class="pilcrow">¶</a>
 </li>
-            <li class="normal" id="section-2.2.1-2.2">
+          </ul>
+<p id="section-2.2.1-3">TODO @Nicola: make another pass stressing tradeoffs between properties if we were to reuse existing protocols<a href="#section-2.2.1-3" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-2.2.1-4.1">
               <strong>Scalability.</strong>
 SCION routers can efficiently forward packets without the need to look up forwarding tables and without keeping per-connection state. Routers only need to verify  MACs in hop fields. This operation is based on modern block ciphers such as AES, can be computed faster than performing a memory lookup and it is widely supported in modern CPUs.
-Routers, therefore, do not require expensive and energy-intensive dedicated hardware, and can  be deployed on off-the-shelf hardware. Lack of forwarding tables also implies that the growing size of forwarding tables is of no concern. Additionally, routers that keep state for network information can suffer from denial-of-service (DoS) attacks exhausting the router's state <span>[<a href="#SCHUCHARD2011" class="xref">SCHUCHARD2011</a>]</span>.<a href="#section-2.2.1-2.2" class="pilcrow">¶</a>
+Routers, therefore, do not require expensive and energy-intensive dedicated hardware, and can  be deployed on off-the-shelf hardware. Lack of forwarding tables also implies that the growing size of forwarding tables is of no concern. Additionally, routers that keep state for network information can suffer from denial-of-service (DoS) attacks exhausting the router's state <span>[<a href="#SCHUCHARD2011" class="xref">SCHUCHARD2011</a>]</span>.<a href="#section-2.2.1-4.1" class="pilcrow">¶</a>
 </li>
-            <li class="normal" id="section-2.2.1-2.3">
+            <li class="normal" id="section-2.2.1-4.2">
               <em>Recovery from failures.</em>
 SCION hosts usually receive more than one path to a given destination.
 Each host can select (potentially disjoint) backup paths that are readily available in case of failure.
 In contrast to the IP Internet, SCION packets are not dynamically rerouted in the network in case of failures. Routers use BFD <span>[<a href="#RFC5880" class="xref">RFC5880</a>]</span> to detect link failures, and in case they cannot forward a packet they send an authenticated SCMP message triggering path revocation. End hosts can use this information, or alternatively active monitoring, to quickly reroute trafifc in case of failures.
-There is therefore no need to wait for BGP convergence.<a href="#section-2.2.1-2.3" class="pilcrow">¶</a>
+There is therefore no need to wait for BGP convergence.<a href="#section-2.2.1-4.2" class="pilcrow">¶</a>
 </li>
-            <li class="normal" id="section-2.2.1-2.4">
+            <li class="normal" id="section-2.2.1-4.3">
               <em>Extensibility</em> SCION, similarly to IPv6, supports extensions in its header.
-Such extensions can be hop-by-hop and end-to-end.<a href="#section-2.2.1-2.4" class="pilcrow">¶</a>
+Such extensions can be hop-by-hop and end-to-end.<a href="#section-2.2.1-4.3" class="pilcrow">¶</a>
 </li>
-            <li class="normal" id="section-2.2.1-2.5">
-              <em>Backwards compatibility.</em> SCION packets support any kind of end-host addressing. IP packets can therefore be transported over SCION by interposing a SCION to IP Gateway (SIG). TODO: reference if we talk more about it later.<a href="#section-2.2.1-2.5" class="pilcrow">¶</a>
+            <li class="normal" id="section-2.2.1-4.4">
+              <em>Backwards compatibility.</em> SCION packets support any kind of end-host addressing. IP packets can therefore be transported over SCION by interposing a SCION to IP Gateway (SIG). TODO: reference if we talk more about it later.<a href="#section-2.2.1-4.4" class="pilcrow">¶</a>
 </li>
           </ul>
 </section>
@@ -1418,9 +1408,8 @@ The SCION trust model differs from classic PKIs in two ways. First, no entity is
 <ul class="normal">
 <li class="normal" id="section-2.3-3.1">
             <em>Absence of global  kill switches</em>. Authentication relies on local trust roots, limiting the scope of authorities and offering local sovereign.
-Monopolistic trust root architectures such as DNSSEC and RPKI/BGPsec enable entities in possession of private keys to shut down portions of the namespace controlled by those keys. The introduction of these kill switches into DNS and BGP has created skepticism and concern over the potential outages that could arise should private keys be misused or fall into the wrong hands [441].
-In addition, during periods of global tensions, there are often calls to use some of today's Internet kill switches to potentially shut down connectivity in portions of the Internet. IN SCION, the fact that each ISD can manage its own roots of trust independently, prevents such external kill switches.
-TODO: add citation 441<a href="#section-2.3-3.1" class="pilcrow">¶</a>
+Monopolistic trust root architectures such as DNSSEC and RPKI/BGPsec enable entities in possession of private keys to shut down portions of the namespace controlled by those keys. The introduction of these kill switches into DNS and BGP has created skepticism and concern over the potential outages that could arise should private keys be misused or fall into the wrong hands <span>[<a href="#ROTHENBERGER2017" class="xref">ROTHENBERGER2017</a>]</span>.
+In addition, during periods of global tensions, there are often calls to use some of today's Internet kill switches to potentially shut down connectivity in portions of the Internet. IN SCION, the fact that each ISD can manage its own roots of trust independently, prevents such external kill switches.<a href="#section-2.3-3.1" class="pilcrow">¶</a>
 </li>
           <li class="normal" id="section-2.3-3.2">
             <em>Resilience to compromised entities and keys.</em> Compromised or malicious trust roots outside an ISD cannot affect operations that stay within that ISD. Moreover, each ISD can be configured to withstand the compromise of any single voting key.<a href="#section-2.3-3.2" class="pilcrow">¶</a>
@@ -1476,7 +1465,7 @@ SIGs are deployed in production SCION networks, and there are commercial impleme
 SBAS consists of a federated backbone of entities. SBAS appears on the outside Internet as a regular BGP-speaking AS. Customers of SBAS can leverage the system to route traffic across the SCION network according to their requirements (i.e., latency, geography, ... ). SBAS contains globally distributed PoPs that advertise its customer's announcements. Traffic is therefore routed as close as possible to the source onto the SCION network. The system is further described in chapter 13 of <span>[<a href="#CHUAT22" class="xref">CHUAT22</a>]</span>.<a href="#section-3.1-2.3" class="pilcrow">¶</a>
 </li>
         </ul>
-<p id="section-3.1-3">TODO: Maybe instead of having bullet points, we can just have a paragraph. This way we don't give too much importance about this section.
+<p id="section-3.1-3">TODO: Maybe instead of having bullet points, we can just have a very short paragraph explaining that, while there are a lot of extensions (as SCION is extensible :), we do not discuss them now, as the focus is to work on its most fundamental components.
 - <em>End-host stack</em>. SCION can be deployed though the use of SICON-to-IP conversion or natively on end hosts.
 - Happy eyeballs (and how we extend it)
 - DrKey &amp; dependencies --&gt; <span>[<a href="#I-D.garciapardo-drkey" class="xref">I-D.garciapardo-drkey</a>]</span>
@@ -1528,6 +1517,9 @@ A possible integration of their path-aware properties remain for now an open que
 <a href="#section-3.2.3" class="section-number selfRef">3.2.3. </a><a href="#name-scion-and-other-routing-app" class="section-name selfRef">SCION and other routing approaches</a>
           </h4>
 <p id="section-3.2.3-1">TODO:  (inclding BGP with colors, semantic routing, ...)<a href="#section-3.2.3-1" class="pilcrow">¶</a></p>
+<p id="section-3.2.3-2">In addition, when comparing to proposed semantic routing (TODO: reference) approaches, with SCION  hosts gain better visibility into network paths.
+TODO: I'm not sure if we want to explicitly say that this approach has advantages to semantic routing.. Maybe we don't want to mention it?
+https://www.ietf.org/id/draft-farrel-irtf-introduction-to-semantic-routing-04.html#I-D.king-irtf-semantic-routing-survey<a href="#section-3.2.3-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="scion-and-previous-attempts-with-path-aware-routing">
@@ -1535,7 +1527,8 @@ A possible integration of their path-aware properties remain for now an open que
           <h4 id="name-scion-and-previous-attempts">
 <a href="#section-3.2.4" class="section-number selfRef">3.2.4. </a><a href="#name-scion-and-previous-attempts" class="section-name selfRef">SCION and previous attempts with path-aware routing</a>
           </h4>
-<p id="section-3.2.4-1">RFC9049 <span>[<a href="#RFC9049" class="xref">RFC9049</a>]</span> illustrates obstacles and lessons learned in previous attempts.
+<p id="section-3.2.4-1">TODO: we maybe remove this part and use ot for a later motivation draft
+RFC9049 <span>[<a href="#RFC9049" class="xref">RFC9049</a>]</span> illustrates obstacles and lessons learned in previous attempts.
 SCION differs from previous attempts to deploy path-aware networking.
 We therefore discuss how SCION relates to some of these lessons, and how it differs from previous attempts.<a href="#section-3.2.4-1" class="pilcrow">¶</a></p>
 <ul class="normal">
@@ -1561,8 +1554,7 @@ SCION path selection is therefore performed at endpoints, and end-hosts can leve
               <em>Keeping per-connection state &amp; keeping traffic in the fast-path</em>: SCION is doing it<a href="#section-3.2.4-2.5" class="pilcrow">¶</a>
 </li>
           </ul>
-<p id="section-3.2.4-3">TODO: look at p. 582 of the Book<a href="#section-3.2.4-3" class="pilcrow">¶</a></p>
-<p id="section-3.2.4-4">We briefly discuss implications of <span>[<a href="#RFC5218" class="xref">RFC5218</a>]</span> (What Makes for a Successful Protocol?) in <span>[<a href="#I-D.dekater-scion-overview" class="xref">I-D.dekater-scion-overview</a>]</span>. Overall, because of the reasons discussed above, we believe SCION avoid many of the other protocol's pitfalls, and can therefore be deployed and standardised.<a href="#section-3.2.4-4" class="pilcrow">¶</a></p>
+<p id="section-3.2.4-3">We briefly discuss implications of <span>[<a href="#RFC5218" class="xref">RFC5218</a>]</span> (What Makes for a Successful Protocol?) in <span>[<a href="#I-D.dekater-scion-overview" class="xref">I-D.dekater-scion-overview</a>]</span>. Overall, because of the reasons discussed above, we believe SCION avoid many of the other protocol's pitfalls, and can therefore be deployed and standardised.<a href="#section-3.2.4-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -1575,9 +1567,7 @@ SCION path selection is therefore performed at endpoints, and end-hosts can leve
 <a href="#section-4" class="section-number selfRef">4. </a><a href="#name-dependency-analysis" class="section-name selfRef">Dependency analysis</a>
       </h2>
 <p id="section-4-1">This section briefly discusses dependencies between SCION's core components, with the goal of facilitating a discussion on standardization.
-TODO: this section contains just notes, to be rephrased
-TODO: Fate sharing and separability in IETF: if I have these different parts, how are they separable (if only some of them manage to succeed?)
-Gap analysis should also analyze things separately in case only some parts of it succeed at the IETF.. There must be some generalizable insights out of this.<a href="#section-4-1" class="pilcrow">¶</a></p>
+TODO: this section contains just notes, the overall wording needs to be rephrased<a href="#section-4-1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-4-2.1">Only PKI - authentication: Overall, the PKI, with its trust model, constitutes the most independent unit that could be potentially  be leveraged by SCION and other protocols. The PKI itself does not have significant dependencies on other pieces, therefore a good starting point would be to describe its trust properties, inrerfaces, and processes.<a href="#section-4-2.1" class="pilcrow">¶</a>
 </li>
@@ -1603,17 +1593,9 @@ TODO: I would add some comments on how SCION avoids some of the issues mentioned
 Also mention that the most important core components are formally verified.<a href="#section-5-1" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="iana-considerations">
 <section id="section-6">
-      <h2 id="name-iana-considerations">
-<a href="#section-6" class="section-number selfRef">6. </a><a href="#name-iana-considerations" class="section-name selfRef">IANA Considerations</a>
-      </h2>
-<p id="section-6-1">This document has no IANA actions.<a href="#section-6-1" class="pilcrow">¶</a></p>
-</section>
-</div>
-<section id="section-7">
       <h2 id="name-informative-references">
-<a href="#section-7" class="section-number selfRef">7. </a><a href="#name-informative-references" class="section-name selfRef">Informative References</a>
+<a href="#section-6" class="section-number selfRef">6. </a><a href="#name-informative-references" class="section-name selfRef">Informative References</a>
       </h2>
 <dl class="references">
 <dt id="ANDERSEN2001">[ANDERSEN2001]</dt>
@@ -1821,14 +1803,6 @@ this informational draft.<a href="#appendix-A-1" class="pilcrow">¶</a></p>
 <div class="email">
 <span>Email:</span>
 <a href="mailto:corine.dekatermuehlhaeuser@inf.ethz.ch" class="email">corine.dekatermuehlhaeuser@inf.ethz.ch</a>
-</div>
-</address>
-<address class="vcard">
-        <div dir="auto" class="left"><span class="fn nameRole">Adrian Perrig</span></div>
-<div dir="auto" class="left"><span class="org">ETH Zuerich</span></div>
-<div class="email">
-<span>Email:</span>
-<a href="mailto:adrian.perrig@inf.ethz.ch" class="email">adrian.perrig@inf.ethz.ch</a>
 </div>
 </address>
 </section>
